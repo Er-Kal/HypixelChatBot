@@ -3,6 +3,19 @@ const readline = require("readline");
 const mineflayer = require("mineflayer");
 const {Client, GatewayIntentBits} = require("discord.js");
 
+/*
+.env variables
+MC_USERNAME= Minecraft account email
+MC_PASSWORD= Minecraft account password
+SERVER_IP= Minecraft server ip, idk most 100% will be hypixel.net
+PREFIX= A prefix used for the commands (eg, ! ? /)
+HYPIXELKEY= Hypixel dev api key
+DISCORD_TOKEN= Discord bot token
+DISCORD_TEXT_CHANNEL= Discord text channel ID
+DISCORD_GUILD= Discord server ID
+*/
+
+
 // FETCH HYPIXEL PLAYER DATA
 async function returnHypixelStats(user){
     try{
