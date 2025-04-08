@@ -113,7 +113,7 @@ function minecraftBot(mcbot){
     mcbot.on('chat:bwStatCheck', async (args)=>{
         args = args.flat();
         data = await returnBWStats(args[3]);
-        mcbot.chat(`/msg ${args[1]} [${data.star}] ${data.display} FKDR : ${data.finals} BBLR : ${data.beds} WLR : ${data.wlr}`);
+        mcbot.chat(`/msg ${args[1]} [${data.star}✫] ${data.display} | FKDR: ${data.finals} | WLR: ${data.wlr} | BBLR: ${data.beds}`);
     })
     // GUILD MSG HANDLER
     mcbot.on('chat:guildMSG', async (args) =>{
@@ -163,7 +163,6 @@ function minecraftBot(mcbot){
     });
     // FUNC TO SEND MSG TO DISC
     async function sendMsgToDiscord(message,channelID){
-        console.log("....");
         try{
             const guild = dcbot.guilds.cache.get(process.env.DISCORD_GUILD);
             if (!guild){
