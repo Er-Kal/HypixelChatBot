@@ -119,26 +119,18 @@ function minecraftBot(mcbot){
     mcbot.on('chat:guildMSG', async (args) =>{
         args = args.flat();
         console.log(args);
-        if (args[1]!=mcbot.username){
-            console.log("chat event");
-            await sendMsgToDiscord(`${args[0] ?? ""}${args[1]} ${args[2]}: ${args[3]}`,process.env.DISCORD_TEXT_CHANNEL);
-        };
+        await sendMsgToDiscord(`${args[0] ?? ""}${args[1]} ${args[2]}: ${args[3]}`,process.env.DISCORD_TEXT_CHANNEL);
     })
     // GUILD JOIN HANDLER
     mcbot.on('chat:guildJoin', async (username) =>{
-        args = args.flat();
-        console.log(args);
-        if (args[1]!=mcbot.username){
-            console.log("chat event");
-            await sendMsgToDiscord(`Guild > ${username} joined.`,process.env.DISCORD_OFFICER_TEXT_CHANNEL);
-        };
+        username = username.flat();
+        await sendMsgToDiscord(`Guild > ${username} joined.`,process.env.DISCORD_OFFICER_TEXT_CHANNEL);
     })
     // GUILD LEFT HANDLER
     mcbot.on('chat:guildLeft', async (username) =>{
         args = args.flat();
         console.log(args);
         if (args[1]!=mcbot.username){
-            console.log("chat event");
             await sendMsgToDiscord(`Guild > ${username} left.`,process.env.DISCORD_OFFICER_TEXT_CHANNEL);
         };
     })
@@ -171,7 +163,6 @@ function minecraftBot(mcbot){
     });
     // FUNC TO SEND MSG TO DISC
     async function sendMsgToDiscord(message,channelID){
-        console.log("....");
         try{
             const guild = dcbot.guilds.cache.get(process.env.DISCORD_GUILD);
             if (!guild){
