@@ -77,8 +77,8 @@ async function returnBWStats(user){
         (bedwarStats.four_four_beds_lost_bedwars ?? 0)+
         (bedwarStats.four_three_beds_lost_bedwars ?? 0);
 
-        bedwarsWins = bedwarsStats.wins_bedwars || 0;
-        bedwarsLosses = bedwarsStats.losses_bedwars || 1;
+        bedwarsWins = bedwarStats.wins_bedwars || 0;
+        bedwarsLosses = bedwarStats.losses_bedwars || 1;
 
         fkdr = ((totalFinalKills || 1)/(totalFinalDeaths || 1)).toFixed(2);
         bblr = ((totalBedsBroken || 1)/(totalBedsLost || 1)).toFixed(2);
