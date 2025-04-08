@@ -95,7 +95,7 @@ mcbot.on('login', () =>{
 mcbot.on('chat:bwStatCheck', async (args)=>{
     args = args.flat();
     data = await returnBWStats(args[3]);
-    mcbot.chat(`msg ${args[0]} ${args[3]} FKDR: ${data.finals} BBLR: ${data.beds}`);
+    mcbot.chat(`/msg ${args[1]} ${args[3]} FKDR: ${data.finals} BBLR: ${data.beds}`);
 })
 // GUILD MSG HANDLER
 mcbot.on('chat:guildMSG', async (args) =>{
