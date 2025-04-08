@@ -145,7 +145,7 @@ function minecraftBot(mcbot){
         
         //console.log("Bot's channels:", dcbot.channels.cache.map(c => `${c.name} (${c.id})`));
         console.log("Bot is online!")
-        sendMsgToDiscord("Bot is online").catch(console.error);
+        //sendMsgToDiscord("Bot is online").catch(console.error);
     });
     // FUNC TO SEND MSG TO DISC
     async function sendMsgToDiscord(message){
