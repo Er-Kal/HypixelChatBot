@@ -110,7 +110,7 @@ function minecraftBot(mcbot){
     mcbot.on('chat:bwStatCheck', async (args)=>{
         args = args.flat();
         data = await returnBWStats(args[3]);
-        mcbot.chat(`/msg ${args[1]} [${data.star}] ${data.display} FKDR: ${data.finals} BBLR: ${data.beds} WLR ${data.wlr}`);
+        mcbot.chat(`/msg ${args[1]} [${data.star}] ${data.display} FKDR : ${data.finals} BBLR : ${data.beds} WLR : ${data.wlr}`);
     })
     // GUILD MSG HANDLER
     mcbot.on('chat:guildMSG', async (args) =>{
