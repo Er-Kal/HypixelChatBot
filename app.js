@@ -173,7 +173,10 @@ function minecraftBot(mcbot){
 
     dcbot.on('messageCreate', (message) => {
         if (message.channel.id === process.env.DISCORD_TEXT_CHANNEL && message.author.id!=process.env.DISCORD_USER_ID){
-            mcbot.chat(`/gc ${message.author.tag} > ${message.content}`);
+            const bannedInputs = ["http:","https:"];
+            if (!bannedInputs.some(ban=>message.content.includes(ban))){
+                mcbot.chat(`gc ${message.author.tag} > ${message.content}`);
+            }
         }
     })
     // BOT ONLINE
