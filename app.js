@@ -12,6 +12,7 @@ HYPIXELKEY= Hypixel dev api key
 DISCORD_TOKEN= Discord bot token
 DISCORD_USER_ID= Discord bot user ID
 DISCORD_TEXT_CHANNEL= Discord text channel ID
+DISCORD_OFFICER_TEXT_CHANNEL= Discord bot/logs or officer channel. Provides more details like join/leaves.
 DISCORD_GUILD= Discord server ID
 */
 
@@ -101,6 +102,8 @@ function minecraftBot(mcbot){
         
         mcbot.addChatPattern("bwStatCheck",new RegExp(`^Guild > (\\[.*]\\s*)?([\\w]{2,17}).*?(\\[.{1}])?: ${process.env.PREFIX}bw ([\\w]{2,17})$`),{parse:true, repeat: true});
         mcbot.addChatPattern("guildMSG", new RegExp(`^Guild > (\\[.*]\\s*)?([\\w]{2,17}).*?(\\[.{1,15}])?: (?!${process.env.PREFIX}bw)(.*)$`),{parse:true, repeat: true});
+        mcbot.addChatPattern("guildJoin", new RegExp(`^Guild > ([\\w]{2,17}) joined\.$`),{parse:true, repeat: true});
+        mcbot.addChatPattern("guildLeft", new RegExp(`^Guild > ([\\w]{2,17}) left\.$`),{parse:true, repeat: true});
     })
     // LOGIN HANDLER
     mcbot.on('login', () =>{
@@ -118,7 +121,25 @@ function minecraftBot(mcbot){
         console.log(args);
         if (args[1]!=mcbot.username){
             console.log("chat event");
-            await sendMsgToDiscord(`${args[0] ?? ""}${args[1]} ${args[2]}: ${args[3]}`);
+            await sendMsgToDiscord(`${args[0] ?? ""}${args[1]} ${args[2]}: ${args[3]}`,process.env.DISCORD_TEXT_CHANNEL);
+        };
+    })
+    // GUILD JOIN HANDLER
+    mcbot.on('chat:guildJoin', async (username) =>{
+        args = args.flat();
+        console.log(args);
+        if (args[1]!=mcbot.username){
+            console.log("chat event");
+            await sendMsgToDiscord(`Guild > ${username} joined.`,process.env.DISCORD_OFFICER_TEXT_CHANNEL);
+        };
+    })
+    // GUILD LEFT HANDLER
+    mcbot.on('chat:guildLeft', async (username) =>{
+        args = args.flat();
+        console.log(args);
+        if (args[1]!=mcbot.username){
+            console.log("chat event");
+            await sendMsgToDiscord(`Guild > ${username} left.`,process.env.DISCORD_OFFICER_TEXT_CHANNEL);
         };
     })
     // HANDLE DISCONNECTS
@@ -149,7 +170,7 @@ function minecraftBot(mcbot){
         //sendMsgToDiscord("Bot is online").catch(console.error);
     });
     // FUNC TO SEND MSG TO DISC
-    async function sendMsgToDiscord(message){
+    async function sendMsgToDiscord(message,channelID){
         console.log("....");
         try{
             const guild = dcbot.guilds.cache.get(process.env.DISCORD_GUILD);
@@ -157,7 +178,7 @@ function minecraftBot(mcbot){
                 console.error("Bot not in discord guild");
             }
 
-            const channel = await guild.channels.fetch(process.env.DISCORD_TEXT_CHANNEL, { force: true });
+            const channel = await guild.channels.fetch(channelID, { force: true });
             if (!channel){
                 console.error("Channel not found");
             }
