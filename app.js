@@ -117,6 +117,7 @@ function minecraftBot(mcbot){
         args = args.flat();
         console.log(args);
         if (!args[1]==mcbot.username){
+            console.log("chat event")
             await sendMsgToDiscord(`${args[0]}${args[1]} ${args[2]}: ${args[3]}`);
         };
     })
@@ -149,6 +150,7 @@ function minecraftBot(mcbot){
     });
     // FUNC TO SEND MSG TO DISC
     async function sendMsgToDiscord(message){
+        console.log("....");
         try{
             const guild = dcbot.guilds.cache.get(process.env.DISCORD_GUILD);
             if (!guild){
