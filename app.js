@@ -6,7 +6,6 @@ const {Client, GatewayIntentBits} = require("discord.js");
 /*
 .env variables
 MC_USERNAME= Minecraft account email
-MC_PASSWORD= Minecraft account password
 SERVER_IP= Minecraft server ip, idk most 100% will be hypixel.net
 PREFIX= A prefix used for the commands (eg, ! ? /)
 HYPIXELKEY= Hypixel dev api key
@@ -96,7 +95,7 @@ async function returnBWStats(user){
 const mcbot = mineflayer.createBot(options);
 minecraftBot(mcbot);
 function minecraftBot(mcbot){
-        // JOIN MSG
+    // JOIN MSG
     mcbot.once('spawn', () => {
         console.log(`Joined with ${mcbot.username}`);
         
@@ -113,12 +112,13 @@ function minecraftBot(mcbot){
         data = await returnBWStats(args[3]);
         mcbot.chat(`/msg ${args[1]} [${data.star}] ${data.display} FKDR: ${data.finals} BBLR: ${data.beds} WLR ${data.wlr}`);
     })
-
     // GUILD MSG HANDLER
     mcbot.on('chat:guildMSG', async (args) =>{
         args = args.flat();
         console.log(args);
-        sendMsgToDiscord(`${args[0]}${args[1]} ${args[2]}: ${args[3]}`);
+        if (!args[1]==mcbot.username){
+            sendMsgToDiscord(`${args[0]}${args[1]} ${args[2]}: ${args[3]}`);
+        };
     })
     // HANDLE DISCONNECTS
     mcbot.on('end', () => {
@@ -131,7 +131,7 @@ function minecraftBot(mcbot){
         console.log("Attempting to rejoin");
         mcbot = mineflayer.createBot(options);
         minecraftBot(mcbot);
-        }
+    }
     // DISC BOT INIT
     const dcbot = new Client({
         intents: [
@@ -145,7 +145,7 @@ function minecraftBot(mcbot){
         
         //console.log("Bot's channels:", dcbot.channels.cache.map(c => `${c.name} (${c.id})`));
         console.log("Bot is online!")
-        sendMsgToDiscord("online").catch(console.error);
+        sendMsgToDiscord("Bot is online").catch(console.error);
     });
     // FUNC TO SEND MSG TO DISC
     async function sendMsgToDiscord(message){
@@ -170,7 +170,7 @@ function minecraftBot(mcbot){
             console.error("ERROR:",error);
         }
     }
-
+    // MESSAGE HANDLER DISCORD
     dcbot.on('messageCreate', (message) => {
         if (message.channel.id === process.env.DISCORD_TEXT_CHANNEL && message.author.id!=process.env.DISCORD_USER_ID){
             const bannedInputs = ["http:","https:"];
