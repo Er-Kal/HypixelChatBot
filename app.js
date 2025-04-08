@@ -18,7 +18,6 @@ DISCORD_GUILD= Discord server ID
 
 options = {
     username: process.env.MC_USERNAME,
-    password: process.env.MC_PASSWORD,
     host: process.env.SERVER_IP,
     version: '1.8.9',
     auth:'microsoft',
@@ -56,9 +55,8 @@ async function returnBWStats(user){
         
         data = await returnHypixelStats(user);
         bedwarStats = data.player.stats?.Bedwars;
-        if (!data.player.stats){
+        bedwarsStar = data.player.achievements.bedwars_level;
 
-        }
         totalFinalKills = (bedwarStats.eight_one_final_kills_bedwars ?? 0)+
         (bedwarStats.eight_two_final_kills_bedwars ?? 0)+
         (bedwarStats.four_four_final_kills_bedwars ?? 0)+
@@ -79,14 +77,18 @@ async function returnBWStats(user){
         (bedwarStats.four_four_beds_lost_bedwars ?? 0)+
         (bedwarStats.four_three_beds_lost_bedwars ?? 0);
 
+        bedwarsWins = bedwarsStats.wins_bedwars || 0;
+        bedwarsLosses = bedwarsStats.losses_bedwars || 1;
+
         fkdr = ((totalFinalKills || 1)/(totalFinalDeaths || 1)).toFixed(2);
         bblr = ((totalBedsBroken || 1)/(totalBedsLost || 1)).toFixed(2);
-        return {finals: fkdr, beds: bblr};
+        winLoss = (bedwarsWins/bedwarsLosses).toFixed(2);
+        return {finals: fkdr, beds: bblr, star: bedwarsStar,wlr : winLoss};
     }
     catch(error){
         console.error("ERROR:",error)
     }
-    return {finals: 0, beds : 0}
+    return {finals: 0, beds : 0, star: 0};
 }
 
 // INIT MC BOT
@@ -108,9 +110,8 @@ function minecraftBot(mcbot){
     mcbot.on('chat:bwStatCheck', async (args)=>{
         args = args.flat();
         data = await returnBWStats(args[3]);
-        mcbot.chat(`/msg ${args[1]} ${args[3]} FKDR: ${data.finals} BBLR: ${data.beds}`);
+        mcbot.chat(`/msg ${args[1]} [${data.star}] ${args[3]} FKDR: ${data.finals} BBLR: ${data.beds} WLR ${data.wlr}`);
     })
-
 
     // GUILD MSG HANDLER
     mcbot.on('chat:guildMSG', async (args) =>{
