@@ -117,7 +117,7 @@ function minecraftBot(mcbot){
         args = args.flat();
         console.log(args);
         if (!args[1]==mcbot.username){
-            sendMsgToDiscord(`${args[0]}${args[1]} ${args[2]}: ${args[3]}`);
+            await sendMsgToDiscord(`${args[0]}${args[1]} ${args[2]}: ${args[3]}`);
         };
     })
     // HANDLE DISCONNECTS
