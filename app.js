@@ -54,6 +54,7 @@ async function returnBWStats(user){
     try{
         
         data = await returnHypixelStats(user);
+        dpName = data.player.displayname;
         bedwarStats = data.player.stats?.Bedwars;
         bedwarsStar = data.player.achievements.bedwars_level;
 
@@ -83,7 +84,7 @@ async function returnBWStats(user){
         fkdr = ((totalFinalKills || 1)/(totalFinalDeaths || 1)).toFixed(2);
         bblr = ((totalBedsBroken || 1)/(totalBedsLost || 1)).toFixed(2);
         winLoss = (bedwarsWins/bedwarsLosses).toFixed(2);
-        return {finals: fkdr, beds: bblr, star: bedwarsStar,wlr : winLoss};
+        return {display: dpName, finals: fkdr, beds: bblr, star: bedwarsStar,wlr : winLoss};
     }
     catch(error){
         console.error("ERROR:",error)
@@ -110,7 +111,7 @@ function minecraftBot(mcbot){
     mcbot.on('chat:bwStatCheck', async (args)=>{
         args = args.flat();
         data = await returnBWStats(args[3]);
-        mcbot.chat(`/msg ${args[1]} [${data.star}] ${args[3]} FKDR: ${data.finals} BBLR: ${data.beds} WLR ${data.wlr}`);
+        mcbot.chat(`/msg ${args[1]} [${data.star}] ${data.display} FKDR: ${data.finals} BBLR: ${data.beds} WLR ${data.wlr}`);
     })
 
     // GUILD MSG HANDLER
