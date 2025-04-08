@@ -11,6 +11,7 @@ SERVER_IP= Minecraft server ip, idk most 100% will be hypixel.net
 PREFIX= A prefix used for the commands (eg, ! ? /)
 HYPIXELKEY= Hypixel dev api key
 DISCORD_TOKEN= Discord bot token
+DISCORD_USER_ID= Discord bot user ID
 DISCORD_TEXT_CHANNEL= Discord text channel ID
 DISCORD_GUILD= Discord server ID
 */
@@ -141,5 +142,11 @@ async function sendMsgToDiscord(message){
         console.error("ERROR:",error);
     }
 }
+
+dcbot.on('messageCreate', (message) => {
+    if (message.channel.id === process.env.DISCORD_TEXT_CHANNEL && message.author.id!=process.env.DISCORD_USER_ID){
+        mcbot.chat(`/gc ${message.author.tag} > ${message.content}`);
+    }
+})
 // BOT ONLINE
 dcbot.login(process.env.DISCORD_TOKEN);
