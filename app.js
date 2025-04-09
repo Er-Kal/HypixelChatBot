@@ -48,7 +48,55 @@ async function returnHypixelStats(user){
     }
     return "womp womp";
 }
-
+// FETCH SB PROFILE DETAILS
+async function fetchSBStats(uuid){
+    try{
+        response = await fetch(`https://soopy.dev/api/v2/player_skyblock/${uuid}?networth=true`);
+        data = await(response.json());
+        if (!data.success){
+            console.error("ERROR:",data.cause);
+            return data;
+        }
+        else{
+            return data;
+        }
+    }
+    catch (error){
+        console.log("ERROR:",error);
+        return "";
+    }
+}
+// RETURN SB STATS
+async function returnSBStats(user){
+    try{
+        data = await returnHypixelStats(user);
+        display = data.player.displayname;
+        uuid = data.player.uuid;
+        fetchedSBData = await fetchSBStats(uuid);
+        currentProfileId = fetchedSBData.data.stats.currentProfileId;
+        currentProfile = fetchedSBData.data.profiles[currentProfileId];
+        member = currentProfile.members[uuid];
+        console.log(member);
+        networth = await formatNetworth(member.nwDetailed.networth);
+        console.log(networth);
+        skillAvg = member.skills.skillAvg;
+        console.log(skillAvg);
+        sbLvl = member.sbLvl;
+        return {display: display, sbLvl: sbLvl, networth:networth,skillAvg:skillAvg};
+    }
+    catch (error){
+        console.log(error);
+        return {sbLv:0,nw:0,skillAvg:0};
+    }
+}
+// FORMAT NETWORTH FOR OOM
+async function formatNetworth(networth){
+    if (networth>=1e12){ return (networth/1e12).toFixed(2)+"T" }
+    if (networth>=1e9){  return (networth/1e9).toFixed(2)+"B" }
+    if (networth>=1e6){  return (networth/1e6).toFixed(2)+"M" }
+    if (networth>=1e3){  return (networth/1e3).toFixed(2)+"K" }
+    return networth;
+}
 // CALC BW STATS
 async function returnBWStats(user){
     try{
@@ -91,7 +139,6 @@ async function returnBWStats(user){
     }
     return {finals: 0, beds : 0, star: 0};
 }
-
 // INIT MC BOT
 const mcbot = mineflayer.createBot(options);
 minecraftBot(mcbot);
@@ -101,6 +148,7 @@ function minecraftBot(mcbot){
         console.log(`Joined with ${mcbot.username}`);
         
         mcbot.addChatPattern("bwStatCheck",new RegExp(`^Guild > (\\[.*]\\s*)?([\\w]{2,17}).*?(\\[.{1}])?: ${process.env.PREFIX}bw ([\\w]{2,17})$`),{parse:true, repeat: true});
+        mcbot.addChatPattern("sbStatCheck",new RegExp(`^Guild > (\\[.*]\\s*)?([\\w]{2,17}).*?(\\[.{1}])?: ${process.env.PREFIX}sb ([\\w]{2,17})$`),{parse:true, repeat: true});
         mcbot.addChatPattern("guildMSG", new RegExp(`^Guild > (\\[.*]\\s*)?([\\w]{2,17}).*?(\\[.{1,15}])?: (?!${process.env.PREFIX}bw)(.*)$`),{parse:true, repeat: true});
         mcbot.addChatPattern("guildJoin", new RegExp(`^Guild > ([\\w]{2,17}) joined\.$`),{parse:true, repeat: true});
         mcbot.addChatPattern("guildLeft", new RegExp(`^Guild > ([\\w]{2,17}) left\.$`),{parse:true, repeat: true});
@@ -109,11 +157,17 @@ function minecraftBot(mcbot){
     mcbot.on('login', () =>{
         mcbot.chat("/limbo");
     })
-    // STAT CHECK HANDLER
+    // BW STAT CHECK HANDLER
     mcbot.on('chat:bwStatCheck', async (args)=>{
         args = args.flat();
         data = await returnBWStats(args[3]);
         mcbot.chat(`/msg ${args[1]} [${data.star}✫] ${data.display} | FKDR: ${data.finals} | WLR: ${data.wlr} | BBLR: ${data.beds}`);
+    })
+    // SB STAT CHECK HANDLER
+    mcbot.on('chat:sbStatCheck', async (args)=>{
+        args = args.flat();
+        data = await returnSBStats(args[3]);
+        mcbot.chat(`/msg ${args[1]} [${data.sbLvl}] ${data.display} | Networth: ${data.networth} | Skill Avg.: ${data.skillAvg.toFixed(2)}`);
     })
     // GUILD MSG HANDLER
     mcbot.on('chat:guildMSG', async (args) =>{
