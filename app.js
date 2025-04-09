@@ -149,7 +149,7 @@ function minecraftBot(mcbot){
         
         mcbot.addChatPattern("bwStatCheck",new RegExp(`^Guild > (\\[.*]\\s*)?([\\w]{2,17}).*?(\\[.{1}])?: ${process.env.PREFIX}bw ([\\w]{2,17})$`),{parse:true, repeat: true});
         mcbot.addChatPattern("sbStatCheck",new RegExp(`^Guild > (\\[.*]\\s*)?([\\w]{2,17}).*?(\\[.{1}])?: ${process.env.PREFIX}sb ([\\w]{2,17})$`),{parse:true, repeat: true});
-        mcbot.addChatPattern("guildMSG", new RegExp(`^Guild > (\\[.*]\\s*)?([\\w]{2,17}).*?(\\[.{1,15}])?: (?!${process.env.PREFIX}bw)(.*)$`),{parse:true, repeat: true});
+        mcbot.addChatPattern("guildMSG", new RegExp(`^Guild > (\\[.*]\\s*)?([\\w]{2,17}).*?(\\[.{1,15}])?: (?!${process.env.PREFIX}bw|${process.env.PREFIX}sb)(.*)$`),{parse:true, repeat: true});
         mcbot.addChatPattern("guildJoin", new RegExp(`^Guild > ([\\w]{2,17}) joined\.$`),{parse:true, repeat: true});
         mcbot.addChatPattern("guildLeft", new RegExp(`^Guild > ([\\w]{2,17}) left\.$`),{parse:true, repeat: true});
     })
