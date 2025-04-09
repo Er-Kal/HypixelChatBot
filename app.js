@@ -2,6 +2,7 @@ require('dotenv').config();
 const readline = require("readline");
 const mineflayer = require("mineflayer");
 const {Client, GatewayIntentBits} = require("discord.js");
+const imageGen = require("./imageGen.js");
 
 /*
 .env variables
@@ -140,63 +141,80 @@ async function returnBWStats(user){
     }
     return {finals: 0, beds : 0, star: 0};
 }
+
 // INIT MC BOT
 const mcbot = mineflayer.createBot(options);
 minecraftBot(mcbot);
 function minecraftBot(mcbot){
+    regularExpressions = {
+        bwStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${process.env.PREFIX}bw\\s+(?<target>[\\w]{2,17})`),
+        sbStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${process.env.PREFIX}sb\\s+(?<target>[\\w]{2,17})`),
+        officerMSG: /^Officer > (\[.*]\s*)?([\w]{2,17}).*?(\[.{1,15}])?: /,
+        guildMSG: /^Guild > (\[.*]\s*)?([\w]{2,17}).*?(\[.{1,15}])?: /,
+        guildJoin: new RegExp(`^Guild > (?<username>[\\w]{2,17}) joined\.$`),
+        guildLeft: new RegExp(`^Guild > (?<username>[\\w]{2,17}) left\.$`),
+    };
+    messageHandlers = {
+        guildMSG: async (user,message) => {
+            regex = new RegExp(`(?:^|\\s)${process.env.PREFIX}(bw|sb)(?:\\s|$)`); // CHECKS IF MESSAGE CONTAINS COMMAND
+            if (!regex.test(message)){
+                await sendMsgToDiscord(`${user+message}`,process.env.DISCORD_TEXT_CHANNEL);
+            }
+        },
+        officerMSG: async (user,message) => {
+            regex = new RegExp(`(?:^|\\s)${process.env.PREFIX}(bw|sb)(?:\\s|$)`); // CHECKS IF MESSAGE CONTAINS COMMAND
+            if (!regex.test(message)){
+                await sendMsgToDiscord(`${user+message}`,process.env.DISCORD_OFFICER_CHANNEL);
+            }
+        },
+        bwStatCheck: async(groups) => {
+            data = await returnBWStats(groups.target);
+            mcbot.chat(`/msg ${groups.username} [${data.star}✫] ${data.display} | FKDR: ${data.finals} | WLR: ${data.wlr} | BBLR: ${data.beds}`);
+        },
+        sbStatCheck: async(groups) => {
+            data = await returnSBStats(groups.target);
+            mcbot.chat(`/msg ${groups.username} [${data.sbLvl}] ${data.display} | Networth: ${data.networth} | Skill Avg.: ${data.skillAvg}`);
+        },
+        guildJoin: async(user) =>{
+            const {username} = user;
+            await sendLogToDiscord(`Guild > ${username} left.`,process.env.DISCORD_BOT_LOGS_CHANNEL);
+        },
+        guildLeft: async(user) =>{
+            const {username} = user;
+            await sendLogToDiscord(`Guild > ${username} left.`,process.env.DISCORD_BOT_LOGS_CHANNEL);
+        }
+    }
+
     // JOIN MSG
     mcbot.once('spawn', () => {
         console.log(`Joined with ${mcbot.username}`);
-        
-        mcbot.addChatPattern("bwStatCheck",new RegExp(`^(?:Guild|Officer) > (\\[.*]\\s*)?([\\w]{2,17}).*?(\\[.{1}])?: ${process.env.PREFIX}bw ([\\w]{2,17})$`),{parse:true, repeat: true});
-        mcbot.addChatPattern("sbStatCheck",new RegExp(`^(?:Guild|Officer) > (\\[.*]\\s*)?([\\w]{2,17}).*?(\\[.{1}])?: ${process.env.PREFIX}sb ([\\w]{2,17})$`),{parse:true, repeat: true});
-        mcbot.addChatPattern("guildMSG", new RegExp(`^Guild > (\\[.*]\\s*)?([\\w]{2,17}).*?(\\[.{1,15}])?: (?!${process.env.PREFIX}bw|${process.env.PREFIX}sb)(.*)$`),{parse:true, repeat: true});
-        mcbot.addChatPattern("officerMSG", new RegExp(`^Officer > (\\[.*]\\s*)?([\\w]{2,17}).*?(\\[.{1,15}])?: (?!${process.env.PREFIX}bw|${process.env.PREFIX}sb)(.*)$`),{parse:true, repeat: true});
-        mcbot.addChatPattern("guildJoin", new RegExp(`^Guild > ([\\w]{2,17}) joined\.$`),{parse:true, repeat: true});
-        mcbot.addChatPattern("guildLeft", new RegExp(`^Guild > ([\\w]{2,17}) left\.$`),{parse:true, repeat: true});
     })
     // LOGIN HANDLER
     mcbot.on('login', () =>{
         mcbot.chat("/limbo");
     })
-    // BW STAT CHECK HANDLER
-    mcbot.on('chat:bwStatCheck', async (args)=>{
-        args = args.flat();
-        data = await returnBWStats(args[3]);
-        mcbot.chat(`/msg ${args[1]} [${data.star}✫] ${data.display} | FKDR: ${data.finals} | WLR: ${data.wlr} | BBLR: ${data.beds}`);
-    })
-    // SB STAT CHECK HANDLER
-    mcbot.on('chat:sbStatCheck', async (args)=>{
+
+    mcbot.on('message', (message) =>{
         try{
-            args = args.flat();
-            data = await returnSBStats(args[3]);
-            mcbot.chat(`/msg ${args[1]} [${data.sbLvl}] ${data.display} | Networth: ${data.networth} | Skill Avg.: ${data.skillAvg}`);
+            if (message.extra){
+                const cleanedMsg = message.text+message.extra[0].text.replace(/§[0-9a-fA-F]/g,'')+message.extra[1].text;
+                for (expression in regularExpressions){
+                    const regex = regularExpressions[expression];
+                    const match = cleanedMsg.match(regex);
+                    if (match){
+                        if (!match.groups){
+                            messageHandlers[expression](message.extra[0].text,message.extra[1].text);
+                        }
+                        else{
+                            messageHandlers[expression](match.groups);
+                        }
+                    }
+                }
+            }
         }
-        catch (error){
-            console.error("Truncation error:",error);
+        catch(error){
+            console.error("ERROR: womp womp");
         }
-    })
-    // GUILD MSG HANDLER
-    mcbot.on('chat:guildMSG', async (args) =>{
-        args = args.flat();
-        console.log(args);
-        await sendMsgToDiscord(`${args[0] ?? ""}${args[1]} ${args[2]}: ${args[3]}`,process.env.DISCORD_TEXT_CHANNEL);
-    })
-    // OFFICER MSG HANDLER
-    mcbot.on('chat:officerMSG', async (args) =>{
-        args = args.flat();
-        console.log(args);
-        await sendMsgToDiscord(`${args[0] ?? ""}${args[1]} ${args[2]}: ${args[3]}`,process.env.DISCORD_OFFICER_TEXT_CHANNEL);
-    })
-    // GUILD JOIN HANDLER
-    mcbot.on('chat:guildJoin', async (username) =>{
-        username = username.flat();
-            await sendMsgToDiscord(`Guild > ${username} joined.`,process.env.DISCORD_BOT_LOGS_CHANNEL);
-    })
-    // GUILD LEFT HANDLER
-    mcbot.on('chat:guildLeft', async (username) =>{
-        username = username.flat();
-        await sendMsgToDiscord(`Guild > ${username} left.`,process.env.DISCORD_BOT_LOGS_CHANNEL);
     })
     // HANDLE DISCONNECTS
     mcbot.on('end', () => {
@@ -241,7 +259,36 @@ function minecraftBot(mcbot){
             if (channel.isThread?.()) {
                 await channel.join();
             }
+            console.log("Generating img");
+            image = await imageGen.drawMinecraftText(message);
+            console.log("Img generated");
+            await channel.send({
+                content:message,
+                files: [{
+                    attachment:image,
+                    name:'image.png',
+                }]
+            });
+        }
+        catch (error){
+            console.error("ERROR:",error);
+        }
+    }
+    async function sendLogToDiscord(message,channelID){
+        try{
+            const guild = dcbot.guilds.cache.get(process.env.DISCORD_GUILD);
+            if (!guild){
+                console.error("Bot not in discord guild");
+            }
 
+            const channel = await guild.channels.fetch(channelID, { force: true });
+            if (!channel){
+                console.error("Channel not found");
+            }
+            
+            if (channel.isThread?.()) {
+                await channel.join();
+            }
             await channel.send(message);
         }
         catch (error){
