@@ -1,3 +1,6 @@
+// WRITTEN BY IamB34N
+
+
 const {
     createCanvas
 } = require('canvas');
@@ -24,7 +27,7 @@ const minecraftColors = {
 };
 
 async function drawMinecraftText(text) {
-    const canvas = createCanvas(400, 200);
+    const canvas = createCanvas(800, 50);
     const ctx = canvas.getContext('2d');
     ctx.font = '20px Arial';
     ctx.textBaseline = 'top';

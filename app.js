@@ -263,7 +263,6 @@ function minecraftBot(mcbot){
             image = await imageGen.drawMinecraftText(message);
             console.log("Img generated");
             await channel.send({
-                content:message,
                 files: [{
                     attachment:image,
                     name:'image.png',
