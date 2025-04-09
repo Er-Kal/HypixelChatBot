@@ -11,8 +11,9 @@ PREFIX= A prefix used for the commands (eg, ! ? /)
 HYPIXELKEY= Hypixel dev api key
 DISCORD_TOKEN= Discord bot token
 DISCORD_USER_ID= Discord bot user ID
-DISCORD_TEXT_CHANNEL= Discord text channel ID
-DISCORD_OFFICER_TEXT_CHANNEL= Discord bot/logs or officer channel. Provides more details like join/leaves.
+DISCORD_TEXT_CHANNEL= Regular members text channel for ingame bridge
+DISCORD_BOT_LOGS_CHANNEL= Discord bot/logs or officer channel. Provides more details like join/leaves.
+DISCORD_OFFICER_CHANNEL= Officers text channel for ingame bridge
 DISCORD_GUILD= Discord server ID
 */
 
@@ -79,9 +80,9 @@ async function returnSBStats(user){
         console.log(member);
         networth = await formatNetworth(member.nwDetailed.networth);
         console.log(networth);
-        skillAvg = member.skills.skillAvg;
+        skillAvg = member.skills.skillAvg.toFixed(0);
         console.log(skillAvg);
-        sbLvl = member.sbLvl;
+        sbLvl = member.sbLvl.toFixed(0);
         return {display: display, sbLvl: sbLvl, networth:networth,skillAvg:skillAvg};
     }
     catch (error){
@@ -147,9 +148,10 @@ function minecraftBot(mcbot){
     mcbot.once('spawn', () => {
         console.log(`Joined with ${mcbot.username}`);
         
-        mcbot.addChatPattern("bwStatCheck",new RegExp(`^Guild > (\\[.*]\\s*)?([\\w]{2,17}).*?(\\[.{1}])?: ${process.env.PREFIX}bw ([\\w]{2,17})$`),{parse:true, repeat: true});
-        mcbot.addChatPattern("sbStatCheck",new RegExp(`^Guild > (\\[.*]\\s*)?([\\w]{2,17}).*?(\\[.{1}])?: ${process.env.PREFIX}sb ([\\w]{2,17})$`),{parse:true, repeat: true});
+        mcbot.addChatPattern("bwStatCheck",new RegExp(`^(?:Guild|Officer) > (\\[.*]\\s*)?([\\w]{2,17}).*?(\\[.{1}])?: ${process.env.PREFIX}bw ([\\w]{2,17})$`),{parse:true, repeat: true});
+        mcbot.addChatPattern("sbStatCheck",new RegExp(`^(?:Guild|Officer) > (\\[.*]\\s*)?([\\w]{2,17}).*?(\\[.{1}])?: ${process.env.PREFIX}sb ([\\w]{2,17})$`),{parse:true, repeat: true});
         mcbot.addChatPattern("guildMSG", new RegExp(`^Guild > (\\[.*]\\s*)?([\\w]{2,17}).*?(\\[.{1,15}])?: (?!${process.env.PREFIX}bw|${process.env.PREFIX}sb)(.*)$`),{parse:true, repeat: true});
+        mcbot.addChatPattern("officerMSG", new RegExp(`^Officer > (\\[.*]\\s*)?([\\w]{2,17}).*?(\\[.{1,15}])?: (?!${process.env.PREFIX}bw|${process.env.PREFIX}sb)(.*)$`),{parse:true, repeat: true});
         mcbot.addChatPattern("guildJoin", new RegExp(`^Guild > ([\\w]{2,17}) joined\.$`),{parse:true, repeat: true});
         mcbot.addChatPattern("guildLeft", new RegExp(`^Guild > ([\\w]{2,17}) left\.$`),{parse:true, repeat: true});
     })
@@ -165,28 +167,36 @@ function minecraftBot(mcbot){
     })
     // SB STAT CHECK HANDLER
     mcbot.on('chat:sbStatCheck', async (args)=>{
-        args = args.flat();
-        data = await returnSBStats(args[3]);
-        mcbot.chat(`/msg ${args[1]} [${data.sbLvl}] ${data.display} | Networth: ${data.networth} | Skill Avg.: ${data.skillAvg.toFixed(2)}`);
+        try{
+            args = args.flat();
+            data = await returnSBStats(args[3]);
+            mcbot.chat(`/msg ${args[1]} [${data.sbLvl}] ${data.display} | Networth: ${data.networth} | Skill Avg.: ${data.skillAvg}`);
+        }
+        catch (error){
+            console.error("Truncation error:",error);
+        }
     })
     // GUILD MSG HANDLER
     mcbot.on('chat:guildMSG', async (args) =>{
         args = args.flat();
         console.log(args);
-        if (args[1]!=mcbot.username){
-            console.log("chat event");
-            await sendMsgToDiscord(`${args[0] ?? ""}${args[1]} ${args[2]}: ${args[3]}`,process.env.DISCORD_TEXT_CHANNEL);
-        };
+        await sendMsgToDiscord(`${args[0] ?? ""}${args[1]} ${args[2]}: ${args[3]}`,process.env.DISCORD_TEXT_CHANNEL);
+    })
+    // OFFICER MSG HANDLER
+    mcbot.on('chat:officerMSG', async (args) =>{
+        args = args.flat();
+        console.log(args);
+        await sendMsgToDiscord(`${args[0] ?? ""}${args[1]} ${args[2]}: ${args[3]}`,process.env.DISCORD_OFFICER_TEXT_CHANNEL);
     })
     // GUILD JOIN HANDLER
     mcbot.on('chat:guildJoin', async (username) =>{
         username = username.flat();
-            await sendMsgToDiscord(`Guild > ${username} joined.`,process.env.DISCORD_OFFICER_TEXT_CHANNEL);
+            await sendMsgToDiscord(`Guild > ${username} joined.`,process.env.DISCORD_BOT_LOGS_CHANNEL);
     })
     // GUILD LEFT HANDLER
     mcbot.on('chat:guildLeft', async (username) =>{
         username = username.flat();
-        await sendMsgToDiscord(`Guild > ${username} left.`,process.env.DISCORD_OFFICER_TEXT_CHANNEL);
+        await sendMsgToDiscord(`Guild > ${username} left.`,process.env.DISCORD_BOT_LOGS_CHANNEL);
     })
     // HANDLE DISCONNECTS
     mcbot.on('end', () => {
@@ -239,11 +249,12 @@ function minecraftBot(mcbot){
         }
     }
     // MESSAGE HANDLER DISCORD
-    dcbot.on('messageCreate', (message) => {
+    dcbot.on('messageCreate', async (message) => {
         if (message.channel.id === process.env.DISCORD_TEXT_CHANNEL && message.author.id!=process.env.DISCORD_USER_ID){
             const bannedInputs = ["http:","https:"];
             if (!bannedInputs.some(ban=>message.content.includes(ban))){
-                mcbot.chat(`/gc ${message.author.tag} > ${message.content}`);
+                await mcbot.chat(`/gc ${message.author.tag} > ${message.content}`);
+                message.delete();
             }
         }
     })
