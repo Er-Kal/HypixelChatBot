@@ -299,14 +299,14 @@ function minecraftBot(mcbot){
         if (message.channel.id === process.env.DISCORD_TEXT_CHANNEL && message.author.id!=process.env.DISCORD_USER_ID){
             const bannedInputs = ["http:","https:"];
             if (!bannedInputs.some(ban=>message.content.includes(ban))){
-                await mcbot.chat(`/gc ${message.author.tag} > ${message.content}`);
+                await mcbot.chat(`/gc ${message.member.displayName} > ${message.content}`);
                 message.delete();
             }
         }
         else if (message.channel.id === process.env.DISCORD_OFFICER_TEXT_CHANNEL && message.author.id!=process.env.DISCORD_USER_ID){
             const bannedInputs = ["http:","https:"];
             if (!bannedInputs.some(ban=>message.content.includes(ban))){
-                await mcbot.chat(`/oc ${message.author.tag} > ${message.content}`);
+                await mcbot.chat(`/oc ${message.member.displayName} > ${message.content}`);
                 message.delete();
             }
         }
