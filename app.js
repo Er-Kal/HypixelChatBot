@@ -303,13 +303,6 @@ function minecraftBot(mcbot){
                 message.delete();
             }
         }
-        if (message.channel.id === process.env.DISCORD_OFFICER_TEXT_CHANNEL && message.author.id!=process.env.DISCORD_USER_ID){
-            const bannedInputs = ["http:","https:"];
-            if (!bannedInputs.some(ban=>message.content.includes(ban))){
-                await mcbot.chat(`/oc ${message.author.tag} > ${message.content}`);
-                message.delete();
-            }
-        }
     })
     // BOT ONLINE
     dcbot.login(process.env.DISCORD_TOKEN);
