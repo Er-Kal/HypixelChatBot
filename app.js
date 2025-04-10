@@ -177,7 +177,7 @@ function minecraftBot(mcbot){
         },
         guildJoin: async(user) =>{
             const {username} = user;
-            await sendLogToDiscord(`Guild > ${username} left.`,process.env.DISCORD_BOT_LOGS_CHANNEL);
+            await sendLogToDiscord(`Guild > ${username} joined.`,process.env.DISCORD_BOT_LOGS_CHANNEL);
         },
         guildLeft: async(user) =>{
             const {username} = user;
@@ -300,6 +300,13 @@ function minecraftBot(mcbot){
             const bannedInputs = ["http:","https:"];
             if (!bannedInputs.some(ban=>message.content.includes(ban))){
                 await mcbot.chat(`/gc ${message.author.tag} > ${message.content}`);
+                message.delete();
+            }
+        }
+        else if (message.channel.id === process.env.DISCORD_OFFICER_TEXT_CHANNEL && message.author.id!=process.env.DISCORD_USER_ID){
+            const bannedInputs = ["http:","https:"];
+            if (!bannedInputs.some(ban=>message.content.includes(ban))){
+                await mcbot.chat(`/oc ${message.author.tag} > ${message.content}`);
                 message.delete();
             }
         }
