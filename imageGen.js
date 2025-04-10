@@ -80,7 +80,6 @@ async function drawMinecraftText(text, options = {}) {
     ctx.font = `${fontSize}px ${fontFamily}`;
     ctx.textBaseline = 'top';
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     // Render text
     currentColor = minecraftColors['§f'];
     let x = padding;
@@ -89,14 +88,14 @@ async function drawMinecraftText(text, options = {}) {
 
     segments.forEach((segment, index) => {
         if (index === 0 && segment) {
-            renderSegment(segment, currentColor);
+            renderSegment(segment, currentColor,0,0);
         } else if (segment) {
             const colorCode = '§' + segment[0];
             if (minecraftColors[colorCode]) {
                 currentColor = minecraftColors[colorCode];
                 segment = segment.substring(1);
             }
-            renderSegment(segment, currentColor);
+            renderSegment(segment, currentColor,0,0);
         }
     });
 
