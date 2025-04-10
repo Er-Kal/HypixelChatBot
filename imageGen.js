@@ -25,90 +25,92 @@ const minecraftColors = {
     '§e': '#FFFF55', // Yellow
     '§f': '#FFFFFF', // White
 };
-async function drawMinecraftText(text) {
+async function drawMinecraftText(text, options = {}) {
     const {
-        maxWidth = 800,  // Max canvas width before wrapping
-        fontSize = 24,   // Font size
-        fontFamily = 'Minecraftia', // Font family
-        padding = 5,    // Padding around text
-        lineHeight = 28  // Line height (adjust based on font size)
+        maxWidth = 800,
+        fontSize = 24,
+        fontFamily = 'Minecraftia',
+        padding = 8,
+        lineHeight = 28
     } = options;
 
-    // Create a temporary canvas to measure text width
+    // Create measurement context
     const tempCanvas = createCanvas(1, 1);
     const tempCtx = tempCanvas.getContext('2d');
     tempCtx.font = `${fontSize}px ${fontFamily}`;
 
-    // Split text into segments (for color codes)
+    // Calculate text metrics first
+    let lines = 1;
+    let currentLineWidth = 0;
+    
     const segments = text.split('§');
-    let currentColor = minecraftColors['§f']; // Default color (white)
-    let totalWidth = 0;
-    let lineWidth = 0;
-    let lines = 1; // Start with 1 line
-
-    // Calculate total width and check if wrapping is needed
+    let currentColor = minecraftColors['§f'];
+    
+    // First pass: calculate number of lines needed
     segments.forEach((segment, index) => {
-        if (index === 0) {
-            // First segment (no color code)
-            lineWidth += tempCtx.measureText(segment).width;
-        } else {
-            // Handle color codes
+        if (index === 0 && segment) {
+            processSegment(segment, currentColor);
+        } else if (segment) {
             const colorCode = '§' + segment[0];
             if (minecraftColors[colorCode]) {
                 currentColor = minecraftColors[colorCode];
-                segment = segment.slice(1); // Remove color code
+                segment = segment.substring(1);
             }
-            lineWidth += tempCtx.measureText(segment).width;
-        }
-
-        // If line exceeds maxWidth, move to next line
-        if (lineWidth > maxWidth - 2 * padding) {
-            lines++;
-            lineWidth = tempCtx.measureText(segment).width; // Reset for new line
+            processSegment(segment, currentColor);
         }
     });
 
-    // Calculate required canvas height
-    const canvasHeight = padding * 2 + lines * lineHeight;
+    function processSegment(text, color) {
+        const words = text.split(/(?<= )/); // Split but keep spaces
+        words.forEach(word => {
+            const wordWidth = tempCtx.measureText(word).width;
+            
+            if (currentLineWidth + wordWidth > maxWidth - 2 * padding) {
+                lines++;
+                currentLineWidth = wordWidth;
+            } else {
+                currentLineWidth += wordWidth;
+            }
+        });
+    }
 
-    // Create the final canvas with dynamic height
-    const canvas = createCanvas(maxWidth, canvasHeight);
+    // Create final canvas
+    const canvas = createCanvas(maxWidth, padding * 2 + lines * lineHeight);
     const ctx = canvas.getContext('2d');
     ctx.font = `${fontSize}px ${fontFamily}`;
     ctx.textBaseline = 'top';
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Reset variables for actual rendering
+    // Render text
     currentColor = minecraftColors['§f'];
     let x = padding;
     let y = padding;
+    currentLineWidth = 0;
 
-    // Render each segment with color and line wrapping
     segments.forEach((segment, index) => {
-        if (index === 0) {
-            // First segment (no color code)
+        if (index === 0 && segment) {
             renderSegment(segment, currentColor);
-        } else {
-            // Handle color codes
+        } else if (segment) {
             const colorCode = '§' + segment[0];
             if (minecraftColors[colorCode]) {
                 currentColor = minecraftColors[colorCode];
-                segment = segment.slice(1);
+                segment = segment.substring(1);
             }
             renderSegment(segment, currentColor);
         }
     });
 
-    // Helper function to render a text segment with wrapping
     function renderSegment(text, color) {
-        const words = text.split(' ');
+        const words = text.split(/(?<= )/); // Split but keep spaces
         words.forEach(word => {
-            const wordWidth = ctx.measureText(word + ' ').width;
+            const wordWidth = ctx.measureText(word).width;
             
-            // If word exceeds line width, move to next line
             if (x + wordWidth > maxWidth - padding) {
                 x = padding;
                 y += lineHeight;
+                currentLineWidth = wordWidth;
+            } else {
+                currentLineWidth += wordWidth;
             }
             
             ctx.fillStyle = color;
@@ -117,10 +119,8 @@ async function drawMinecraftText(text) {
         });
     }
 
-    const buffer = canvas.toBuffer('image/png');
-    return buffer;
+    return canvas.toBuffer('image/png');
 }
-
 module.exports = {
     drawMinecraftText,
 }
