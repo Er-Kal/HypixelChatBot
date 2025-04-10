@@ -1,9 +1,9 @@
 // WRITTEN BY IamB34N
 
 
-const {
-    createCanvas
-} = require('canvas');
+const { createCanvas, registerFont } = require('canvas');
+const fs = require('fs');
+registerFont('./minecraftia.ttf', { family: 'Minecraftia' });
 
 
 // Minecraft color codes mapping
@@ -25,11 +25,21 @@ const minecraftColors = {
     '§e': '#FFFF55', // Yellow
     '§f': '#FFFFFF', // White
 };
+(async () => {
+    const minecraftFont = new FontFace(
+      'Minecraftia',
+      'url(https://github.com/IdreesInc/Minecraft-Font/raw/master/Minecraftia.ttf)'
+    );
+  
+    await minecraftFont.load();
+    console.log('Font loaded:', minecraftFont.family);
+  })();
 
 async function drawMinecraftText(text) {
     const canvas = createCanvas(800, 50);
     const ctx = canvas.getContext('2d');
-    ctx.font = '20px Arial';
+    ctx.font = 'ctx.font = '16px Minecraftia';
+';
     ctx.textBaseline = 'top';
     // Clear canvas before drawing new text
     ctx.clearRect(0, 0, canvas.width, canvas.height);
