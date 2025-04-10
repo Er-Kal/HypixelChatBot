@@ -164,7 +164,7 @@ function minecraftBot(mcbot){
         officerMSG: async (user,message) => {
             regex = new RegExp(`(?:^|\\s)${process.env.PREFIX}(bw|sb)(?:\\s|$)`); // CHECKS IF MESSAGE CONTAINS COMMAND
             if (!regex.test(message)){
-                await sendMsgToDiscord(`${user+message}`,process.env.DISCORD_OFFICER_CHANNEL);
+                await sendMsgToDiscord(`${user+message}`,process.env.DISCORD_OFFICER_TEXT_CHANNEL);
             }
         },
         bwStatCheck: async(groups) => {
@@ -300,6 +300,13 @@ function minecraftBot(mcbot){
             const bannedInputs = ["http:","https:"];
             if (!bannedInputs.some(ban=>message.content.includes(ban))){
                 await mcbot.chat(`/gc ${message.author.tag} > ${message.content}`);
+                message.delete();
+            }
+        }
+        if (message.channel.id === process.env.DISCORD_OFFICER_TEXT_CHANNEL && message.author.id!=process.env.DISCORD_USER_ID){
+            const bannedInputs = ["http:","https:"];
+            if (!bannedInputs.some(ban=>message.content.includes(ban))){
+                await mcbot.chat(`/oc ${message.author.tag} > ${message.content}`);
                 message.delete();
             }
         }
