@@ -27,11 +27,11 @@ const minecraftColors = {
 };
 async function drawMinecraftText(text) {
     const {
-        maxWidth = 600,  // Max canvas width before wrapping
+        maxWidth = 800,  // Max canvas width before wrapping
         fontSize = 24,   // Font size
         fontFamily = 'Minecraftia', // Font family
         padding = 5,    // Padding around text
-        lineHeight = 30  // Line height (adjust based on font size)
+        lineHeight = 28  // Line height (adjust based on font size)
     } = options;
 
     // Create a temporary canvas to measure text width
