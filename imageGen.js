@@ -38,8 +38,8 @@ const minecraftColors = {
 async function drawMinecraftText(text) {
     const canvas = createCanvas(800, 50);
     const ctx = canvas.getContext('2d');
-    ctx.font = 'ctx.font = '16px Minecraftia';
-';
+    ctx.font = '16px Minecraftia';
+    
     ctx.textBaseline = 'top';
     // Clear canvas before drawing new text
     ctx.clearRect(0, 0, canvas.width, canvas.height);
