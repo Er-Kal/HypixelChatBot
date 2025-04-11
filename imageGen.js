@@ -28,10 +28,10 @@ const minecraftColors = {
 async function drawMinecraftText(text, options = {}) {
     const {
         maxWidth = 800,
-        fontSize = 24,
+        fontSize = 28,
         fontFamily = 'Minecraftia',
         padding = 8,
-        lineHeight = 28
+        lineHeight = 32
     } = options;
 
     // Create measurement context
