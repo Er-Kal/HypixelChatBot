@@ -58,15 +58,15 @@ function minecraftBot(mcbot){
         },
         bwStatCheck: async(groups) => {
             data = await returnBWStats(groups.target);
-            mcbot.chat(`/msg ${groups.username} [${data.star}✫] ${data.display} | FKDR: ${data.finals} | WLR: ${data.wlr} | BBLR: ${data.beds}`);
+            mcbot.chat(`/msg ${groups.username} [${data.star}✫] ${data.display} ▏ FKDR: ${data.finals} ▏ WLR: ${data.wlr} ▏ BBLR: ${data.beds}`);
         },
         sbStatCheck: async(groups) => {
             data = await returnSBStats(groups.target);
-            mcbot.chat(`/msg ${groups.username} [${data.sbLvl}] ${data.display} | Networth: ${data.networth} | Skill Avg.: ${data.skillAvg}`);
+            mcbot.chat(`/msg ${groups.username} [${data.sbLvl}] ${data.display} ▏Networth: ${data.networth} ▏Skill Avg.: ${data.skillAvg}`);
         },
         swStatCheck: async(groups) => {
             data = await returnSWStats(groups.target);
-            mcbot.chat(`/msg ${groups.username} [${data.star}] ${data.display} | KDR: ${data.kdr} | WLR: ${data.wlr} | Kills: ${data.kills} | Wins: ${data.wins}`);
+            mcbot.chat(`/msg ${groups.username} [${data.star}✮] ${data.display} ▏ KDR: ${data.kdr} ▏ WLR: ${data.wlr} ▏ Kills: ${data.kills} ▏ Wins: ${data.wins}`);
         },
         guildJoin: async(user) =>{
             const {username} = user;
