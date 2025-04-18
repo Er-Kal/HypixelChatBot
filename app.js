@@ -41,6 +41,9 @@ function minecraftBot(mcbot){
         guildMSG: /^Guild > (\[.*]\s*)?([\w]{2,17}).*?(\[.{1,15}])?: /,
         guildJoin: new RegExp(`^Guild > (?<username>[\\w]{2,17}) joined\.$`),
         guildLeft: new RegExp(`^Guild > (?<username>[\\w]{2,17}) left\.$`),
+        guildMemberJoined: new RegExp(`^(\\[.*]\\s*)?(?<username>[\\w]{2,17}) joined the guild!$`),
+        guildMemberLeft: new RegExp(`^(\\[.*]\\s*)?([\\w]{2,17}) left the guild!$`),
+        guildRankChange: new RegExp(`^(\\[.*]\\s*)?([\\w]{2,17}) was (promoted|demoted) from (.*) to (.*)$`)
     };
     messageHandlers = {
         guildMSG: async (user,message) => {
@@ -62,12 +65,12 @@ function minecraftBot(mcbot){
         },
         sbStatCheck: async(groups) => {
             data = await returnSBStats(groups.target);
-            mcbot.chat(`/msg ${groups.username} [${data.sbLvl}] ${data.display} ▏Networth: ${data.networth} ▏Skill Avg.: ${data.skillAvg}`);
+            mcbot.chat(`/msg ${groups.username} [${data.sbLvl}] ${data.display} ▏ Networth: ${data.networth} ▏ Skill Avg.: ${data.skillAvg}`);
         },
         swStatCheck: async(groups) => {
             data = await returnSWStats(groups.target);
             mcbot.chat(`/msg ${groups.username} [${data.star}✮] ${data.display} ▏ KDR: ${data.kdr} ▏ WLR: ${data.wlr} ▏ Kills: ${data.kills} ▏ Wins: ${data.wins}`);
-        },
+        },/*
         guildJoin: async(user) =>{
             const {username} = user;
             await sendLogToDiscord(`Guild > ${username} joined.`,process.env.DISCORD_BOT_LOGS_CHANNEL);
@@ -75,6 +78,9 @@ function minecraftBot(mcbot){
         guildLeft: async(user) =>{
             const {username} = user;
             await sendLogToDiscord(`Guild > ${username} left.`,process.env.DISCORD_BOT_LOGS_CHANNEL);
+        },*/
+        guildMemberJoined: async(groups) =>{
+            await mcbot.chat(`/gc Welcome ${groups.username}!`);
         }
     }
 
@@ -87,20 +93,25 @@ function minecraftBot(mcbot){
         mcbot.chat("/limbo");
     })
 
-    mcbot.on('message', (message) =>{
+    mcbot.on('message', async (message) =>{
         try{
+            console.log(message);
             if (message.extra){
-                const cleanedMsg = message.text+message.extra[0].text.replace(/§[0-9a-fA-F]/g,'')+message.extra[1].text;
+                //const cleanedMsg = message.text+message.extra[0].text.replace(/§[0-9a-fA-F]/g,'')+message.extra[1].text;
+                const cleanedMsg = message.text+message.extra.map((el) => el.text.replace(/§[0-9a-fA-F]/g,'')).join('');
+                console.log(cleanedMsg);
                 for (expression in regularExpressions){
                     const regex = regularExpressions[expression];
                     const match = cleanedMsg.match(regex);
                     if (match){
+                        await sendLogToDiscord(cleanedMsg,process.env.DISCORD_BOT_LOGS_CHANNEL);
                         if (!match.groups){
                             messageHandlers[expression](message.extra[0].text,message.extra[1].text);
                         }
                         else{
                             messageHandlers[expression](match.groups);
                         }
+                        break;
                     }
                 }
             }
