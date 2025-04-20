@@ -47,10 +47,15 @@ function minecraftBot(mcbot){
     };
     messageHandlers = {
         guildMSG: async (user,message) => {
-            regex = new RegExp(`^${process.env.PREFIX}(sw|bw|sb)\\s+(?<target>[\\w]{2,17})`); // CHECKS IF MESSAGE CONTAINS COMMAND
-            
-            if (!regex.test(message)){
-                await sendMsgToDiscord(`${user+message}`,process.env.DISCORD_TEXT_CHANNEL);
+            try{
+                regex = new RegExp(`^${process.env.PREFIX}(sw|bw|sb)\\s+(?<target>[\\w]{2,17})`); // CHECKS IF MESSAGE CONTAINS COMMAND
+                
+                if (!regex.test(message)){
+                    await sendMsgToDiscord(`${user+message}`,process.env.DISCORD_TEXT_CHANNEL);
+                }
+            }
+            catch (error){
+                console.error("Error:",error);
             }
         },
         officerMSG: async (user,message) => {
