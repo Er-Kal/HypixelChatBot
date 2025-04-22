@@ -66,15 +66,18 @@ function minecraftBot(mcbot){
         },
         bwStatCheck: async(groups) => {
             data = await returnBWStats(groups.target);
-            mcbot.chat(`/msg ${groups.username} [${data.star}✫] ${data.display} ▏ FKDR: ${data.finals} ▏ WLR: ${data.wlr} ▏ BBLR: ${data.beds}`);
+            await mcbot.chat(`/msg ${groups.username} [${data.star}✫] ${data.display} ▏ FKDR: ${data.finals} ▏ WLR: ${data.wlr} ▏ BBLR: ${data.beds}`);
+            await sendLogToDiscord(`[${data.star}✫] ${data.display} ▏ FKDR: ${data.finals} ▏ WLR: ${data.wlr} ▏ BBLR: ${data.beds}`,process.env.DISCORD_BOT_LOGS_CHANNEL);
         },
         sbStatCheck: async(groups) => {
             data = await returnSBStats(groups.target);
             mcbot.chat(`/msg ${groups.username} [${data.sbLvl}] ${data.display} ▏ Networth: ${data.networth} ▏ Skill Avg.: ${data.skillAvg}`);
+            await sendLogToDiscord(`[${data.sbLvl}] ${data.display} ▏ Networth: ${data.networth} ▏ Skill Avg.: ${data.skillAvg}`,process.env.DISCORD_BOT_LOGS_CHANNEL);
         },
         swStatCheck: async(groups) => {
             data = await returnSWStats(groups.target);
             mcbot.chat(`/msg ${groups.username} [${data.star}✮] ${data.display} ▏ KDR: ${data.kdr} ▏ WLR: ${data.wlr} ▏ Kills: ${data.kills} ▏ Wins: ${data.wins}`);
+            await sendLogToDiscord(`[${data.star}✮] ${data.display} ▏ KDR: ${data.kdr} ▏ WLR: ${data.wlr} ▏ Kills: ${data.kills} ▏ Wins: ${data.wins}`,process.env.DISCORD_BOT_LOGS_CHANNEL);
         },/*
         guildJoin: async(user) =>{
             const {username} = user;
@@ -84,6 +87,15 @@ function minecraftBot(mcbot){
             const {username} = user;
             await sendLogToDiscord(`Guild > ${username} left.`,process.env.DISCORD_BOT_LOGS_CHANNEL);
         },*/
+        guildJoin: ()=>{
+            console.log("someone joined");
+        },
+        guildLeft: ()=>{
+            console.log("someone left");
+        },
+        guildRankChange: ()=>{
+            console.log("rank change");
+        },
         guildMemberJoined: async(groups) =>{
             await mcbot.chat(`/gc Welcome ${groups.username}!`);
         }
@@ -122,7 +134,7 @@ function minecraftBot(mcbot){
             }
         }
         catch(error){
-            console.error("ERROR: womp womp");
+            console.error("ERROR:",error);
         }
     })
     // HANDLE DISCONNECTS
