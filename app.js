@@ -33,7 +33,7 @@ reconnectTimer=10000; // Time to reconnect to minecraft server if it goes down i
 const mcbot = mineflayer.createBot(options);
 minecraftBot(mcbot);
 function minecraftBot(mcbot){
-    regularExpressions = {
+    /*regularExpressions = {
         bwStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${process.env.PREFIX}bw\\s+(?<target>[\\w]{2,17})`),
         sbStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${process.env.PREFIX}sb\\s+(?<target>[\\w]{2,17})`),
         swStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${process.env.PREFIX}sw\\s+(?<target>[\\w]{2,17})`),
@@ -43,7 +43,24 @@ function minecraftBot(mcbot){
         guildLeft: new RegExp(`^Guild > (?<username>[\\w]{2,17}) left\.$`),
         guildMemberJoined: new RegExp(`^(\\[.*]\\s*)?(?<username>[\\w]{2,17}) joined the guild!$`),
         guildMemberLeft: new RegExp(`^(\\[.*]\\s*)?([\\w]{2,17}) left the guild!$`),
-        guildRankChange: new RegExp(`^(\\[.*]\\s*)?([\\w]{2,17}) was (promoted|demoted) from (.*) to (.*)$`)
+        guildRankChange: new RegExp(`^(\\[.*]\\s*)?([\\w]{2,17}) was (promoted|demoted) from (.*) to (.*)$`),
+        guildRankChange: /^(\[.*]\s)?([\w*]{2,17}) has muted (\[.*]\s)?([\w*]{2,17}) for (\d*[mhd])$/,
+        guildRankChange: /^(\[.*]\s)?([\w*]{2,17}) has unmuted (\[.*]\s)?([\w*]{2,17})$/
+    };*/
+    regularExpressions = {
+        
+        bwStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${process.env.PREFIX}bw\\s+(?<target>[\\w]{2,17})`),
+        sbStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${process.env.PREFIX}sb\\s+(?<target>[\\w]{2,17})`),
+        swStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${process.env.PREFIX}sw\\s+(?<target>[\\w]{2,17})`),
+        officerMSG: /^Officer > (\[.*]\s*)?([\w]{2,17}).*?(\[.{1,15}])?: /,
+        guildMSG: /^Guild > (\[.*]\s*)?([\w]{2,17}).*?(\[.{1,15}])?: /,
+        guildJoin: /^Guild > (?<username>[\w]{2,17}) joined\.$/,
+        guildLeft: /^Guild > (?<username>[\w]{2,17}) left\.$/,
+        guildMemberJoined: /^(\[.*]\s*)?(?<username>[\w]{2,17}) joined the guild!$/,
+        guildMemberLeft: /^(\[.*]\s*)?([\w]{2,17}) left the guild!$/,
+        guildRankChange: /^(\[.*]\s*)?([\w]{2,17}) was (promoted|demoted) from (.*) to (.*)$/,
+        guildMute: /^(\[.*]\s)?([\w*]{2,17}) has muted (\[.*]\s)?([\w*]{2,17}) for (\d+[mhd])$/,
+        guildUnmute: /^(\[.*]\s)?([\w*]{2,17}) has unmuted (\[.*]\s)?([\w*]{2,17})$/
     };
     messageHandlers = {
         guildMSG: async (user,message) => {
@@ -78,15 +95,7 @@ function minecraftBot(mcbot){
             data = await returnSWStats(groups.target);
             mcbot.chat(`/msg ${groups.username} [${data.star}✮] ${data.display} ▏ KDR: ${data.kdr} ▏ WLR: ${data.wlr} ▏ Kills: ${data.kills} ▏ Wins: ${data.wins}`);
             await sendLogToDiscord(`[${data.star}✮] ${data.display} ▏ KDR: ${data.kdr} ▏ WLR: ${data.wlr} ▏ Kills: ${data.kills} ▏ Wins: ${data.wins}`,process.env.DISCORD_BOT_LOGS_CHANNEL);
-        },/*
-        guildJoin: async(user) =>{
-            const {username} = user;
-            await sendLogToDiscord(`Guild > ${username} joined.`,process.env.DISCORD_BOT_LOGS_CHANNEL);
         },
-        guildLeft: async(user) =>{
-            const {username} = user;
-            await sendLogToDiscord(`Guild > ${username} left.`,process.env.DISCORD_BOT_LOGS_CHANNEL);
-        },*/
         guildJoin: ()=>{
             console.log("someone joined");
         },
@@ -95,6 +104,12 @@ function minecraftBot(mcbot){
         },
         guildRankChange: ()=>{
             console.log("rank change");
+        },
+        guildMute: ()=>{
+            console.log("someone muted");
+        },
+        guildUnmute: ()=>{
+            console.log("someone unmuted");
         },
         guildMemberJoined: async(groups) =>{
             await mcbot.chat(`/gc Welcome ${groups.username}!`);
