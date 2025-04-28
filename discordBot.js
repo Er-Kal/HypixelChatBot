@@ -110,6 +110,16 @@ dcbot.on('interactionCreate', async (interaction) =>{
                 bridge.emit("mute",playerName,duration);
                 interaction.reply({content:"Command sent",ephemeral: true})
             }
+            if (interaction.commandName ==="promote"){
+                const playerName = interaction.options.getString("player-name");
+                bridge.emit("promote",playerName);
+                interaction.reply({content:"Command sent",ephemeral:true});
+            }
+            if (interaction.commandName ==="demote"){
+                const playerName = interaction.options.getString("player-name");
+                bridge.emit("demote",playerName);
+                interaction.reply({content:"Command sent",ephemeral:true});
+            }
         }
         
     }

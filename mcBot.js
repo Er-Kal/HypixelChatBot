@@ -151,6 +151,14 @@ function configureMinecraftBot(bot){
             mcbot.chat(`/g mute ${playerName} ${duration}`);
         }
     )
+    bridge.on('promote', (playerName) => {
+            mcbot.chat(`/g promote ${playerName}`);
+        }
+    )
+    bridge.on('demote', (playerName) => {
+            mcbot.chat(`/g demote ${playerName}`);
+        }
+    )
 }
 
 module.exports= {
