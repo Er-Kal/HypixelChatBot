@@ -144,13 +144,11 @@ function configureMinecraftBot(bot){
         }
     )
     bridge.on('unmute', (playerName) => {
-        console.log("WAIT FIX");
-            //mcbot.chat(`/g unmute ${playerName}`);
+            mcbot.chat(`/g unmute ${playerName}`);
         }
     )
     bridge.on('mute', (playerName,duration) => {
-        console.log("WAIT FIX");
-            //mcbot.chat(`/g mute ${playerName} ${duration}`);
+            mcbot.chat(`/g mute ${playerName} ${duration}`);
         }
     )
 }
