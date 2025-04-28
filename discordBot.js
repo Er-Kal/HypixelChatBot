@@ -91,21 +91,27 @@ dcbot.on('messageCreate', async (message) => {
 dcbot.login(process.env.DISCORD_TOKEN);
 
 dcbot.on('interactionCreate', async (interaction) =>{
-    if (interaction.isCommand()){
-        if (interaction.commandName === "status"){
+    if (interaction.isCommand() && interaction.guild.id===process.env.DISCORD_GUILD){
+        if (!interaction.member.roles.cache.has(process.env.OFFICER_ROLE_ID)){
+            interaction.reply({content:"Insufficient role permissions", ephemeral:true})
+        }
+        else{
+            if (interaction.commandName === "status"){
             interaction.reply({content:"Probably working :shrug:",ephemeral: true})
+            }
+            if (interaction.commandName === "unmute"){
+                const playerName = interaction.options.getString("player-name");
+                bridge.emit("unmute",playerName);
+                interaction.reply({content:"Command sent",ephemeral: true})
+            }
+            if (interaction.commandName === "mute"){
+                const playerName = interaction.options.getString("player-name");
+                const duration = interaction.options.getString("duration");
+                bridge.emit("mute",playerName,duration);
+                interaction.reply({content:"Command sent",ephemeral: true})
+            }
         }
-        if (interaction.commandName === "unmute"){
-            const playerName = interaction.options.getString("player-name");
-            bridge.emit("unmute",playerName);
-            interaction.reply({content:"Command sent",ephemeral: true})
-        }
-        if (interaction.commandName === "mute"){
-            const playerName = interaction.options.getString("player-name");
-            const duration = interaction.options.getString("duration");
-            bridge.emit("mute",playerName,duration);
-            interaction.reply({content:"Command sent",ephemeral: true})
-        }
+        
     }
 
 

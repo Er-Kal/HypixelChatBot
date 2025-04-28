@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-const {REST, Routes, SlashCommandBuilder} = require("discord.js")
+const {REST, Routes, SlashCommandBuilder,PermissionFlagsBits} = require("discord.js")
 
 
 const botID = process.env.DISCORD_USER_ID;
@@ -10,18 +10,21 @@ const botToken = process.env.DISCORD_TOKEN;
 const rest = new REST().setToken(botToken);
 
 commands = [
-    new SlashCommandBuilder().setName("status").setDescription("Status of the bots"),
+    new SlashCommandBuilder().setName("status").setDescription("Status of the bots")
+    .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
     new SlashCommandBuilder().setName("unmute").setDescription("Unmute a player")
     .addStringOption(option => {
-        return option.setName("player-name").setDescription("The name of the player you want to unmute");
-    }),
+        return option.setName("player-name").setDescription("The name of the player you want to unmute").setRequired(true);
+    })
+    .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
     new SlashCommandBuilder().setName("mute").setDescription("Mute a player")
     .addStringOption(option => {
-        return option.setName("player-name").setDescription("The name of the player you want to mute");
+        return option.setName("player-name").setDescription("The name of the player you want to mute").setRequired(true);
     })
     .addStringOption(option => {
-        return option.setName("duration").setDescription("The length of time you want to mute them for eg. 5m (m-minutes, h-hours, d-days.)");
-    }),
+        return option.setName("duration").setDescription("The length of time you want to mute them for eg. 5m (m-minutes, h-hours, d-days.)").setRequired(true);
+    })
+    .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
 ]
 
 const registerSlash = async () =>{
