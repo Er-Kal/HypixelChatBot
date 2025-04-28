@@ -152,7 +152,7 @@ function configureMinecraftBot(bot){
         console.log("WAIT FIX");
             //mcbot.chat(`/g mute ${playerName} ${duration}`);
         }
-    )/
+    )
 }
 
 module.exports= {
