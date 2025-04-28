@@ -102,7 +102,8 @@ dcbot.on('interactionCreate', async (interaction) =>{
         }
         if (interaction.commandName === "mute"){
             const playerName = interaction.options.getString("player-name");
-            bridge.emit("unmute",playerName);
+            const duration = interaction.options.getString("duration");
+            bridge.emit("mute",playerName,duration);
             interaction.reply({content:"Command sent",ephemeral: true})
         }
     }

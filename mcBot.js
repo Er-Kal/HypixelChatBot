@@ -147,6 +147,10 @@ function configureMinecraftBot(bot){
             mcbot.chat(`/g unmute ${playerName}`);
         }
     )
+    bridge.on('mute', (playerName,duration) => {
+            mcbot.chat(`/g mute ${playerName} ${duration}`);
+        }
+    )
 }
 
 module.exports= {
