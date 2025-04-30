@@ -51,6 +51,5 @@ const registerSlash = async () =>{
     catch(error){
         console.error(error);
     }
-
 }
 registerSlash();

@@ -127,8 +127,6 @@ dcbot.on('interactionCreate', async (interaction) =>{
 
 })
 
-
-
 module.exports = {
     sendMsgToDiscord,
     sendLogToDiscord

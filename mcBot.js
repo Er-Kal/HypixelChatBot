@@ -91,8 +91,9 @@ function configureMinecraftBot(bot){
         }
     }
     // JOIN MSG
-    mcbot.once('spawn', () => {
+    mcbot.once('spawn', async () => {
         console.log(`Joined with ${mcbot.username}`);
+        await sendLogToDiscord("MC Bot connected",process.env.DISCORD_BOT_LOGS_CHANNEL);
     })
     // LOGIN HANDLER
     mcbot.on('login', () =>{
@@ -126,10 +127,10 @@ function configureMinecraftBot(bot){
         }
     })
     // HANDLE DISCONNECTS
-    mcbot.on('end', () => {
+    mcbot.on('end', async () => {
         console.log("MC BOT disconnected");
+        await sendLogToDiscord("MC Bot disconnected",process.env.DISCORD_BOT_LOGS_CHANNEL);
         setTimeout(reconnect,reconnectTimer);
-        dcbot.destroy();
     }
     );
     function reconnect(){
