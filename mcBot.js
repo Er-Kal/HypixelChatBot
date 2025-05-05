@@ -87,7 +87,7 @@ function configureMinecraftBot(bot){
             console.log("someone unmuted");
         },
         guildMemberJoined: async(groups) =>{
-            await mcbot.chat(`/gc Welcome ${groups.username}!`);
+            await mcbot.chat(`/gc Welcome ${groups.username}! We have a discord if you'd like to join at /g discord :) We are primarily a SB/BW Guild!`);
         }
     }
     // JOIN MSG
