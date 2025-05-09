@@ -136,7 +136,7 @@ function configureMinecraftBot(bot){
     function reconnect(){
         console.log("Attempting to rejoin");
         mcbot = mineflayer.createBot(options);
-        minecraftBot(mcbot);
+        configureMinecraftBot(mcbot);
     }
     bridge.on('sendMsgToMinecraft', (message,isOfficer) => {
             msg = isOfficer? "/oc" : "/gc";
