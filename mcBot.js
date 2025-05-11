@@ -35,7 +35,8 @@ function configureMinecraftBot(bot){
         guildMemberLeft: /^(\[.*]\s*)?([\w]{2,17}) left the guild!$/,
         guildRankChange: /^(\[.*]\s*)?([\w]{2,17}) was (promoted|demoted) from (.*) to (.*)$/,
         guildMute: /^(\[.*]\s)?([\w*]{2,17}) has muted (\[.*]\s)?([\w*]{2,17}) for (\d+[mhd])$/,
-        guildUnmute: /^(\[.*]\s)?([\w*]{2,17}) has unmuted (\[.*]\s)?([\w*]{2,17})$/
+        guildUnmute: /^(\[.*]\s)?([\w*]{2,17}) has unmuted (\[.*]\s)?([\w*]{2,17})$/,
+        guildQuestCompleted: /^\s*GUILD QUEST TIER (\d) COMPLETED/
     };
     messageHandlers = {
         guildMSG: async (user,message) => {
@@ -88,6 +89,10 @@ function configureMinecraftBot(bot){
         },
         guildMemberJoined: async(groups) =>{
             await mcbot.chat(`/gc Welcome ${groups.username}! We have a discord if you'd like to join at /g discord :) We are primarily a SB/BW Guild!`);
+        },
+        guildQuestCompleted: async()=>{
+            console.log("guild tier up");
+            await sendLogToDiscord(`Guild quest completed`,process.env.DISCORD_BOT_LOGS_CHANNEL);
         }
     }
     // JOIN MSG
