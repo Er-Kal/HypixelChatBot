@@ -1,4 +1,7 @@
-async function returnHypixelStats(user){
+const NodeCache = require('node-cache');
+
+const cache = new NodeCache({stdTTL:600});
+async function fetchHypixelStats(user){
     try{
         response = await fetch(`https://api.hypixel.net/player?key=${process.env.HYPIXELKEY}&name=${user}`)
         data = await response.json();
@@ -19,6 +22,22 @@ async function returnHypixelStats(user){
         
     }
     return "womp womp";
+}
+
+
+
+async function returnHypixelStats(user){
+    try{
+        data = cache.get(user);
+        if (data==null){
+            data = fetchHypixelStats(user);
+            cache.set(user, data, 60);
+        }
+        return data;
+    }
+    catch(error){
+        console.error("Error:",error)
+    }
 }
 module.exports ={
     returnHypixelStats,

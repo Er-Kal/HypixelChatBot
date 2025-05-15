@@ -1,5 +1,4 @@
 const {returnHypixelStats} = require("./returnHypixelStats.js");
-
 // CALC BW STATS
 async function returnBWStats(user){
     try{
