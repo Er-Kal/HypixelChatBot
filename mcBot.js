@@ -4,6 +4,7 @@ const mineflayer = require("mineflayer");
 const {returnSBStats} = require("./statFunctions/returnSBStats.js");
 const {returnBWStats} = require("./statFunctions/returnBWStats.js");
 const {returnSWStats} = require("./statFunctions/returnSWStats.js");
+const {avoidRepeatString} = require("./avoidRepeat.js");
 
 const {bridge} = require("./botBridge.js");
 
@@ -59,17 +60,21 @@ function configureMinecraftBot(bot){
         },
         bwStatCheck: async(groups) => {
             data = await returnBWStats(groups.target);
-            await mcbot.chat(`/msg ${groups.username} [${data.star}✫] ${data.display} ▏ FKDR: ${data.finals} ▏ WLR: ${data.wlr} ▏ BBLR: ${data.beds}`);
+            avoidRepeat = await avoidRepeatString();
+            await mcbot.chat(`/msg ${groups.username} [${data.star}✫] ${data.display} ▏ FKDR: ${data.finals} ▏ WLR: ${data.wlr} ▏ BBLR: ${data.beds} ▏ ${avoidRepeat}`);
+            console.log(`/msg ${groups.username} [${data.star}✫] ${data.display} ▏ FKDR: ${data.finals} ▏ WLR: ${data.wlr} ▏ BBLR: ${data.beds} ▏ ${avoidRepeat}`);
             await sendLogToDiscord(`[${data.star}✫] ${data.display} ▏ FKDR: ${data.finals} ▏ WLR: ${data.wlr} ▏ BBLR: ${data.beds}`,process.env.DISCORD_BOT_LOGS_CHANNEL);
         },
         sbStatCheck: async(groups) => {
             data = await returnSBStats(groups.target);
-            mcbot.chat(`/msg ${groups.username} [${data.sbLvl}] ${data.display} ▏ Networth: ${data.networth} ▏ Skill Avg.: ${data.skillAvg}`);
+            avoidRepeat = await avoidRepeatString();
+            mcbot.chat(`/msg ${groups.username} [${data.sbLvl}] ${data.display} ▏ Networth: ${data.networth} ▏ Skill Avg.: ${data.skillAvg} ▏ ${avoidRepeat}`);
             await sendLogToDiscord(`[${data.sbLvl}] ${data.display} ▏ Networth: ${data.networth} ▏ Skill Avg.: ${data.skillAvg}`,process.env.DISCORD_BOT_LOGS_CHANNEL);
         },
         swStatCheck: async(groups) => {
             data = await returnSWStats(groups.target);
-            mcbot.chat(`/msg ${groups.username} [${data.star}✮] ${data.display} ▏ KDR: ${data.kdr} ▏ WLR: ${data.wlr} ▏ Kills: ${data.kills} ▏ Wins: ${data.wins}`);
+            avoidRepeat = await avoidRepeatString();
+            mcbot.chat(`/msg ${groups.username} [${data.star}✮] ${data.display} ▏ KDR: ${data.kdr} ▏ WLR: ${data.wlr} ▏ Kills: ${data.kills} ▏ Wins: ${data.wins} ▏ ${avoidRepeat}`);
             await sendLogToDiscord(`[${data.star}✮] ${data.display} ▏ KDR: ${data.kdr} ▏ WLR: ${data.wlr} ▏ Kills: ${data.kills} ▏ Wins: ${data.wins}`,process.env.DISCORD_BOT_LOGS_CHANNEL);
         },
         guildJoin: ()=>{
