@@ -1,5 +1,6 @@
 #Bot Data
 guildMembers.json
+avoidRepeatMessages.json
 
 # Logs
 logs

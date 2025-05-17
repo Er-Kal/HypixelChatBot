@@ -1,24 +1,18 @@
-strings = ["discord.gg/shadeop",
-"maybe touch some grass",
-":-):-):-):-)", 
-"shade#1",
-"dontaskabthis",
-"❀❇✳✴✴✴✳❇❀",
-"we love hypixel",
-"(╯°□°)╯︵ ┻━┻",
-"stay hydrated",
-`no kizzy (slang for "no cap")`,
-"get that gexp",
-"tick tick tick tick"];
+var fs = require("fs");
+
+const data = fs.readFileSync("./avoidRepeatMessages.json");
+const messages = JSON.parse(data).messages;
+
 
 iter = 0;
 
+
 async function avoidRepeatString(){
     iter++;
-    if (iter+1>strings.length){
+    if (iter+1>messages.length){
         iter=0;
     }
-    return strings[iter];
+    return messages[iter];
 }
 
 module.exports= {
