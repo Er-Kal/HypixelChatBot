@@ -37,7 +37,8 @@ function configureMinecraftBot(bot){
         guildRankChange: /^(\[.*]\s*)?([\w]{2,17}) was (promoted|demoted) from (.*) to (.*)$/,
         guildMute: /^(\[.*]\s)?([\w*]{2,17}) has muted (\[.*]\s)?([\w*]{2,17}) for (\d+[mhd])$/,
         guildUnmute: /^(\[.*]\s)?([\w*]{2,17}) has unmuted (\[.*]\s)?([\w*]{2,17})$/,
-        guildQuestCompleted: /^\s*GUILD QUEST TIER (\d) COMPLETED/
+        guildQuestCompleted: /^\s*GUILD QUEST TIER (\d) COMPLETED/,
+        guildLevelUp: /^\s*The Guild has reached Level (\d*)!$/
     };
     messageHandlers = {
         guildMSG: async (user,message) => {
@@ -96,8 +97,12 @@ function configureMinecraftBot(bot){
             await mcbot.chat(`/gc Welcome ${groups.username}! We have a discord if you'd like to join at /g discord :) We are primarily a SB/BW Guild!`);
         },
         guildQuestCompleted: async()=>{
-            console.log("guild tier up");
-            await sendLogToDiscord(`Guild quest completed`,process.env.DISCORD_BOT_LOGS_CHANNEL);
+            console.log("Guild Quest Tier Up");
+            await sendLogToDiscord(`Guild Quest Tier Completed!`,process.env.DISCORD_BOT_LOGS_CHANNEL);
+        },
+        guildLevelUp: async()=>{
+            console.log("Guild Level Up");
+            await sendLogToDiscord('Guild Levelled up!',process.env.DISCORD_BOT_LOGS_CHANNEL);
         }
     }
     // JOIN MSG
