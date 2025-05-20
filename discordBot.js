@@ -4,7 +4,7 @@ const {Client, GatewayIntentBits} = require("discord.js");
 const imageGen = require("./imageGen.js");
 const {bridge} = require("./botBridge.js");
 
-// DISC BOT INIT
+// Initialises discord bot
 const dcbot = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -12,11 +12,12 @@ const dcbot = new Client({
         GatewayIntentBits.MessageContent,
     ]
 });
-// DISC BOT INIT HANDLER
+// Event handler for when discord bot is online, sends simple message
 dcbot.on('ready', async () => {
     console.log("Bot is online!")
 });
-// FUNC TO SEND MSG TO DISC
+// Function that sends a message to discord. Uses image gen.
+// Used for sending minecraft messages with color formatting.
 async function sendMsgToDiscord(message,channelID){
     try{
         const guild = dcbot.guilds.cache.get(process.env.DISCORD_GUILD);
@@ -46,7 +47,8 @@ async function sendMsgToDiscord(message,channelID){
         console.error("ERROR:",error);
     }
 }
-// FUNC TO SEND LOG TO DISC
+// Function to send log messages to discord
+// Used for simple text such as join messages, etc.
 async function sendLogToDiscord(message,channelID){
     try{
         const guild = dcbot.guilds.cache.get(process.env.DISCORD_GUILD);
@@ -69,52 +71,65 @@ async function sendLogToDiscord(message,channelID){
     }
 }
 
-// MESSAGE HANDLER DISCORD
+// Handles when messages are sent in the specific channels. 
 dcbot.on('messageCreate', async (message) => {
     const bannedInputs = ["http:","https:"];
+    // Simple check to see if message includes links lwk unnecessary since hypixel stops these anyway
     if (!bannedInputs.some(ban=>message.content.includes(ban))){
+        // Regular text channel messages
         if (message.channel.id === process.env.DISCORD_TEXT_CHANNEL && message.author.id!=process.env.DISCORD_USER_ID){
             bridge.emit('sendMsgToMinecraft',`${message.member.displayName} > ${message.content}`,false);
             message.delete();
         }
+        // Officer channel messages
         else if (message.channel.id === process.env.DISCORD_OFFICER_TEXT_CHANNEL && message.author.id!=process.env.DISCORD_USER_ID){
             bridge.emit('sendMsgToMinecraft',`${message.member.displayName} > ${message.content}`,true);
             message.delete();
         }
+        // Bot channel messages, sends a message without username
         else if (message.channel.id === process.env.DISCORD_BOT_LOGS_CHANNEL && message.author.id!=process.env.DISCORD_USER_ID){
             bridge.emit('sendMsgToMinecraft',message.content,false);
             message.delete();
         }
     }
 })
-// BOT ONLINE
+// Makes the bot login/go online
 dcbot.login(process.env.DISCORD_TOKEN);
 
+// Command handler
+// Most commands sent through the minecraft bot: (un)mute, pro/demote
 dcbot.on('interactionCreate', async (interaction) =>{
+    // Check to see if message is a command and for the guild. 
     if (interaction.isCommand() && interaction.guild.id===process.env.DISCORD_GUILD){
+        // Check if the command user has officer role
         if (!interaction.member.roles.cache.has(process.env.OFFICER_ROLE_ID)){
             interaction.reply({content:"Insufficient role permissions", ephemeral:true})
         }
         else{
+            // Status command, does nada
             if (interaction.commandName === "status"){
             interaction.reply({content:"Probably working :shrug:",ephemeral: true})
             }
+            // Unmute command
             if (interaction.commandName === "unmute"){
                 const playerName = interaction.options.getString("player-name");
                 bridge.emit("unmute",playerName);
                 interaction.reply({content:"Command sent",ephemeral: true})
             }
+            // Mute Command
             if (interaction.commandName === "mute"){
                 const playerName = interaction.options.getString("player-name");
                 const duration = interaction.options.getString("duration");
                 bridge.emit("mute",playerName,duration);
                 interaction.reply({content:"Command sent",ephemeral: true})
             }
+            // Promote command
             if (interaction.commandName ==="promote"){
                 const playerName = interaction.options.getString("player-name");
                 bridge.emit("promote",playerName);
                 interaction.reply({content:"Command sent",ephemeral:true});
             }
+            // Demote command
             if (interaction.commandName ==="demote"){
                 const playerName = interaction.options.getString("player-name");
                 bridge.emit("demote",playerName);

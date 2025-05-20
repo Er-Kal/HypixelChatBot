@@ -5,5 +5,6 @@
         "guild chat bot :)",
         "default text",
         "have a nice day!"
-    ]
+    ],
+    "welcomeMessage":"Welcome \\user\\! We have a discord if you'd like to join at /g discord :) We are primarily a SB/BW Guild!"
 }

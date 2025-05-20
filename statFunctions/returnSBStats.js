@@ -18,6 +18,7 @@ async function fetchSBStats(uuid){
         return "";
     }
 }
+
 // RETURN SB STATS
 async function returnSBStats(user){
     try{
@@ -41,6 +42,7 @@ async function returnSBStats(user){
         return {display: user, sbLv:0,nw:0,skillAvg:0};
     }
 }
+
 // FORMAT NETWORTH FOR OOM
 async function formatNetworth(networth){
     if (networth>=1e12){ return (networth/1e12).toFixed(2)+"T" }

@@ -1,6 +1,6 @@
 #Bot Data
-guildMembers.json
-avoidRepeatMessages.json
+
+config.json
 
 # Logs
 logs

@@ -1,5 +1,4 @@
-// WRITTEN BY IamB34N
-
+// Help from IamB34N
 
 const { createCanvas, registerFont } = require('canvas');
 const fs = require('fs');

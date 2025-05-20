@@ -1,6 +1,9 @@
 const NodeCache = require('node-cache');
 
+// Cache for user data
 const cache = new NodeCache({stdTTL:600});
+
+// Fetches hypixel data
 async function fetchHypixelStats(user){
     try{
         response = await fetch(`https://api.hypixel.net/player?key=${process.env.HYPIXELKEY}&name=${user}`)
@@ -24,8 +27,8 @@ async function fetchHypixelStats(user){
     return "womp womp";
 }
 
-
-
+// Function to return hypixel stats
+// If user exists in cache, return from cache, else fetch from Hypixel API.
 async function returnHypixelStats(user){
     try{
         data = cache.get(user);

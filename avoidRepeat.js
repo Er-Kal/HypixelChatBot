@@ -1,12 +1,13 @@
-var fs = require("fs");
+var config = require("./config.json");
 
-const data = fs.readFileSync("./avoidRepeatMessages.json");
-const messages = JSON.parse(data).messages;
+// Fetch random messages from config
+// Used to bypass repeated messages
+const messages = config.messages;
 
 
 iter = 0;
 
-
+// Iterates through array to use next string
 async function avoidRepeatString(){
     iter++;
     if (iter+1>messages.length){

@@ -1,4 +1,5 @@
 const {createMinecraftBot} = require("./mcBot.js");
 
-createMinecraftBot();
+// Entry file :)
 
+createMinecraftBot();

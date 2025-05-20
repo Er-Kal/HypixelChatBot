@@ -8,6 +8,11 @@ const {avoidRepeatString} = require("./avoidRepeat.js");
 
 const {bridge} = require("./botBridge.js");
 
+// Grabs welcome message from config
+var config = require("./config.json");
+const welcomeMessage = config.welcomeMessage;
+
+// Options data for mcbot
 options = {
     username: process.env.MC_USERNAME,
     host: process.env.SERVER_IP,
@@ -16,14 +21,17 @@ options = {
     keepAlive: true,
 }
 let mcbot;
-reconnectTimer=10000; // Time to reconnect to minecraft server if it goes down in ms. (default 30s = 10000)
+reconnectTimer=10000; // Time to reconnect to minecraft server if it goes down in ms. (default 10s = 10000)
 
+// Creates and configures minecraft bot
 function createMinecraftBot(){
     mcbot = mineflayer.createBot(options);
     configureMinecraftBot(mcbot);
 }
 
+// Sets all the handlers for minecraft bot
 function configureMinecraftBot(bot){
+    // Regexp to match for commands/messages
     regularExpressions = {
         bwStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${process.env.PREFIX}[bB][wW]\\s+(?<target>[\\w]{2,17})`),
         sbStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${process.env.PREFIX}[sS][bB]\\s+(?<target>[\\w]{2,17})`),
@@ -40,6 +48,7 @@ function configureMinecraftBot(bot){
         guildQuestCompleted: /^\s*GUILD QUEST TIER (\d) COMPLETED/,
         guildLevelUp: /^\s*The Guild has reached Level (\d*)!$/
     };
+    // Handlers for regexp matches
     messageHandlers = {
         guildMSG: async (user,message) => {
             try{
@@ -78,7 +87,7 @@ function configureMinecraftBot(bot){
             mcbot.chat(`/msg ${groups.username} [${data.star}✮] ${data.display} ▏ KDR: ${data.kdr} ▏ WLR: ${data.wlr} ▏ Kills: ${data.kills} ▏ Wins: ${data.wins} ▏ ${avoidRepeat}`);
             await sendLogToDiscord(`[${data.star}✮] ${data.display} ▏ KDR: ${data.kdr} ▏ WLR: ${data.wlr} ▏ Kills: ${data.kills} ▏ Wins: ${data.wins}`,process.env.DISCORD_BOT_LOGS_CHANNEL);
         },
-        guildJoin: ()=>{
+        guildJoin: async(groups)=>{
             console.log("someone joined");
         },
         guildLeft: ()=>{
@@ -94,7 +103,8 @@ function configureMinecraftBot(bot){
             console.log("someone unmuted");
         },
         guildMemberJoined: async(groups) =>{
-            await mcbot.chat(`/gc Welcome ${groups.username}! We have a discord if you'd like to join at /g discord :) We are primarily a SB/BW Guild!`);
+            message = welcomeMessage.replace("\\user\\",groups.username);
+            await mcbot.chat(`/gc `+message);
         },
         guildQuestCompleted: async()=>{
             console.log("Guild Quest Tier Up");

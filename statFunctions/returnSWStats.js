@@ -1,5 +1,7 @@
 const {returnHypixelStats} = require("./returnHypixelStats.js")
 
+
+// Calculate and return SW stats
 async function returnSWStats(user){
     try{
         data = await returnHypixelStats(user);
