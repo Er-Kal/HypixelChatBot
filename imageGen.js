@@ -24,6 +24,25 @@ const minecraftColors = {
     '§e': '#FFFF55', // Yellow
     '§f': '#FFFFFF', // White
 };
+
+const minecraftShadowColors = {
+    '§0': '#000000', // Black
+    '§1': '#00002A', // Dark Blue
+    '§2': '#002A00', // Dark Green
+    '§3': '#002A2A', // Dark Aqua
+    '§4': '#2A0000', // Dark Red
+    '§5': '#2A002A', // Dark Purple
+    '§6': '#2A2A00', // Gold
+    '§7': '#2A2A2A', // Gray
+    '§8': '#151515', // Dark Gray
+    '§9': '#15153F', // Blue
+    '§a': '#153F15', // Green
+    '§b': '#153F3F', // Aqua
+    '§c': '#3F1515', // Red
+    '§d': '#3F153F', // Light Purple
+    '§e': '#3F3F15', // Yellow
+    '§f': '#3F3F3F', // White
+}
 async function drawMinecraftText(text, options = {}) {
     const {
         maxWidth = 800,
@@ -85,6 +104,12 @@ async function drawMinecraftText(text, options = {}) {
     let y = padding;
     currentLineWidth = 0;
 
+
+    ctx.shadowOffsetX = 3;
+    ctx.shadowOffsetY = 3;
+    ctx.shadowBlur = 0;
+    ctx.shadowColor = "rgb(51 51 51)";
+
     segments.forEach((segment, index) => {
         if (index === 0 && segment) {
             renderSegment(segment, currentColor,0,0);
@@ -92,13 +117,14 @@ async function drawMinecraftText(text, options = {}) {
             const colorCode = '§' + segment[0];
             if (minecraftColors[colorCode]) {
                 currentColor = minecraftColors[colorCode];
+                shadowColor = minecraftShadowColors[colorCode];
                 segment = segment.substring(1);
             }
-            renderSegment(segment, currentColor,0,0);
+            renderSegment(segment, currentColor,shadowColor);
         }
     });
 
-    function renderSegment(text, color) {
+    function renderSegment(text, color, shadowcolor) {
         const words = text.split(/(?<= )/); // Split but keep spaces
         words.forEach(word => {
             const wordWidth = ctx.measureText(word).width;
@@ -110,7 +136,7 @@ async function drawMinecraftText(text, options = {}) {
             } else {
                 currentLineWidth += wordWidth;
             }
-            
+            ctx.shadowColor=shadowcolor;
             ctx.fillStyle = color;
             ctx.fillText(word, x, y);
             x += wordWidth;
