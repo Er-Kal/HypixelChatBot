@@ -11,6 +11,8 @@ This bot functions using mineflayer on hypixel. Any modifications to automate ta
   - bw (user) to check bedwars level, fkdr (Final Kill/Death Ratio), bblr (Bed Broken/Lost Ratio), wlr (Win/Loss Ratio)
   - sb (user) to check skyblock profile level, networth, skill average
   - sw (user) to check skywars level, kdr (Kill/Death Ratio), wlr (Win/Loss Ratio), kills (Total Kills), wins (Total Wins)
+  - Caching to avoid hitting rate limits
+  - Avoid "repeating messages" to allow multiple people to check someone's stats
 - Admin logs
   - Join/Leave Messages
   - New Members/Leaving Members
