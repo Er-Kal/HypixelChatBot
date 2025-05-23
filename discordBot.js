@@ -4,6 +4,7 @@ const {Client, GatewayIntentBits} = require("discord.js");
 const imageGen = require("./imageGen.js");
 const {bridge} = require("./botBridge.js");
 
+var config = require("./config.json");
 // Initialises discord bot
 const dcbot = new Client({
     intents: [
@@ -20,7 +21,7 @@ dcbot.on('ready', async () => {
 // Used for sending minecraft messages with color formatting.
 async function sendMsgToDiscord(message,channelID){
     try{
-        const guild = dcbot.guilds.cache.get(process.env.DISCORD_GUILD);
+        const guild = dcbot.guilds.cache.get(config.discordServerID);
         if (!guild){
             console.error("Bot not in discord guild");
         }
@@ -51,7 +52,7 @@ async function sendMsgToDiscord(message,channelID){
 // Used for simple text such as join messages, etc.
 async function sendLogToDiscord(message,channelID){
     try{
-        const guild = dcbot.guilds.cache.get(process.env.DISCORD_GUILD);
+        const guild = dcbot.guilds.cache.get(config.discordServerID);
         if (!guild){
             console.error("Bot not in discord guild");
         }
@@ -77,32 +78,32 @@ dcbot.on('messageCreate', async (message) => {
     // Simple check to see if message includes links lwk unnecessary since hypixel stops these anyway
     if (!bannedInputs.some(ban=>message.content.includes(ban))){
         // Regular text channel messages
-        if (message.channel.id === process.env.DISCORD_TEXT_CHANNEL && message.author.id!=process.env.DISCORD_USER_ID){
+        if (message.channel.id === config.discordIngameTextChannel && message.author.id!=config.discordUserID){
             bridge.emit('sendMsgToMinecraft',`${message.member.displayName} > ${message.content}`,false);
             message.delete();
         }
         // Officer channel messages
-        else if (message.channel.id === process.env.DISCORD_OFFICER_TEXT_CHANNEL && message.author.id!=process.env.DISCORD_USER_ID){
+        else if (message.channel.id === config.discordIngameOfficerTextChannel && message.author.id!=config.discordUserID){
             bridge.emit('sendMsgToMinecraft',`${message.member.displayName} > ${message.content}`,true);
             message.delete();
         }
         // Bot channel messages, sends a message without username
-        else if (message.channel.id === process.env.DISCORD_BOT_LOGS_CHANNEL && message.author.id!=process.env.DISCORD_USER_ID){
+        else if (message.channel.id === config.discordBotLogsTextChannel && message.author.id!=config.discordUserID){
             bridge.emit('sendMsgToMinecraft',message.content,false);
             message.delete();
         }
     }
 })
 // Makes the bot login/go online
-dcbot.login(process.env.DISCORD_TOKEN);
+dcbot.login(config.discordBotToken);
 
 // Command handler
 // Most commands sent through the minecraft bot: (un)mute, pro/demote
 dcbot.on('interactionCreate', async (interaction) =>{
     // Check to see if message is a command and for the guild. 
-    if (interaction.isCommand() && interaction.guild.id===process.env.DISCORD_GUILD){
+    if (interaction.isCommand() && interaction.guild.id===config.discordServerID){
         // Check if the command user has officer role
-        if (!interaction.member.roles.cache.has(process.env.OFFICER_ROLE_ID)){
+        if (!interaction.member.roles.cache.has(config.discordOfficerRoleID)){
             interaction.reply({content:"Insufficient role permissions", ephemeral:true})
         }
         else{

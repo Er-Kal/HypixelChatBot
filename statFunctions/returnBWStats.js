@@ -28,12 +28,22 @@ async function returnBWStats(user){
         (bedwarStats.four_four_beds_lost_bedwars ?? 0)+
         (bedwarStats.four_three_beds_lost_bedwars ?? 0);
 
-        bedwarsWins = bedwarStats.wins_bedwars || 0;
-        bedwarsLosses = bedwarStats.losses_bedwars || 1;
+        totalWins = (bedwarStats.eight_one_wins_bedwars ?? 0)+
+        (bedwarStats.eight_two_wins_bedwars ?? 0)+
+        (bedwarStats.four_four_wins_bedwars ?? 0)+
+        (bedwarStats.four_three_wins_bedwars ?? 0);
+
+        totalLosses = (bedwarStats.eight_one_losses_bedwars ?? 0)+
+        (bedwarStats.eight_two_losses_bedwars ?? 0)+
+        (bedwarStats.four_four_losses_bedwars ?? 0)+
+        (bedwarStats.four_three_losses_bedwars ?? 0);
+
+        // bedwarsWins = bedwarStats.wins_bedwars || 0;
+        // bedwarsLosses = bedwarStats.losses_bedwars || 1;
 
         fkdr = ((totalFinalKills || 1)/(totalFinalDeaths || 1)).toFixed(2);
         bblr = ((totalBedsBroken || 1)/(totalBedsLost || 1)).toFixed(2);
-        winLoss = (bedwarsWins/bedwarsLosses).toFixed(2);
+        winLoss = ((totalWins || 1)/(totalLosses || 1)).toFixed(2);
         return {display: dpName, finals: fkdr, beds: bblr, star: bedwarsStar,wlr : winLoss};
     }
     catch(error){

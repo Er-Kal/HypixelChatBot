@@ -1,12 +1,14 @@
 const NodeCache = require('node-cache');
 
+var config = require("../config.json");
+
 // Cache for user data
 const cache = new NodeCache({stdTTL:600});
 
 // Fetches hypixel data
 async function fetchHypixelStats(user){
     try{
-        response = await fetch(`https://api.hypixel.net/player?key=${process.env.HYPIXELKEY}&name=${user}`)
+        response = await fetch(`https://api.hypixel.net/player?key=${config.hypixelAPIKey}&name=${user}`)
         data = await response.json();
         if (!data.success){
             if (data.cause==="You have already looked up this name recently"){

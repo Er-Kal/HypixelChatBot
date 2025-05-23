@@ -1,11 +1,12 @@
-require("dotenv").config();
+
+var config = require("./config.json");
 
 const {REST, Routes, SlashCommandBuilder,PermissionFlagsBits} = require("discord.js")
 
 // Fetches discord data for registering commands
-const botID = process.env.DISCORD_USER_ID;
-const serverID = process.env.DISCORD_GUILD;
-const botToken = process.env.DISCORD_TOKEN;
+const botID = config.discordUserID;
+const serverID = config.discordServerID;
+const botToken = config.discordBotToken;
 
 const rest = new REST().setToken(botToken);
 // Slash commands list

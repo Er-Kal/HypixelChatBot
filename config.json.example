@@ -6,5 +6,17 @@
         "default text",
         "have a nice day!"
     ],
-    "welcomeMessage":"Welcome \\user\\! We have a discord if you'd like to join at /g discord :) We are primarily a SB/BW Guild!"
+    "welcomeMessage":"Welcome \\user\\! We have a discord if you'd like to join at /g discord :) We are primarily a SB/BW Guild!",
+    "accountEmail":"",
+    "serverIP":"hypixel.net",
+    "prefix":"!",
+    "hypixelAPIKey":"Your hypixel developer API key",
+    "discordBotToken":"The token of the discord bot",
+    "discordUserID":"The user ID of the discord bot",
+    "discordIngameTextChannel":"Channel where users can interact between ingame and discord",
+    "discordIngameOfficerTextChannel":"Similar to above, but for officer chat",
+    "discordBotLogsTextChannel":"Stores logs such as joins/leaves/promotes",
+    "discordServerID":"The ID of the server",
+    "discordOfficerRoleID":"The ID of the admin role on discord, to prevent unauthorised command access",
+    "hypixelGuildName":"Your hypixel guild name"
 }

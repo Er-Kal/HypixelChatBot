@@ -8,14 +8,12 @@ const {avoidRepeatString} = require("./avoidRepeat.js");
 
 const {bridge} = require("./botBridge.js");
 
-// Grabs welcome message from config
 var config = require("./config.json");
-const welcomeMessage = config.welcomeMessage;
 
 // Options data for mcbot
 options = {
-    username: process.env.MC_USERNAME,
-    host: process.env.SERVER_IP,
+    username: config.accountEmail,
+    host: config.serverIP,
     version: '1.8.9',
     auth:'microsoft',
     keepAlive: true,
@@ -33,9 +31,9 @@ function createMinecraftBot(){
 function configureMinecraftBot(bot){
     // Regexp to match for commands/messages
     regularExpressions = {
-        bwStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${process.env.PREFIX}[bB][wW]\\s+(?<target>[\\w]{2,17})`),
-        sbStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${process.env.PREFIX}[sS][bB]\\s+(?<target>[\\w]{2,17})`),
-        swStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${process.env.PREFIX}[sS][wW]\\s+(?<target>[\\w]{2,17})`),
+        bwStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${config.prefix}[bB][wW]\\s+(?<target>[\\w]{2,17})`),
+        sbStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${config.prefix}[sS][bB]\\s+(?<target>[\\w]{2,17})`),
+        swStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${config.prefix}[sS][wW]\\s+(?<target>[\\w]{2,17})`),
         officerMSG: /^Officer > (\[.*]\s*)?([\w]{2,17}).*?(\[.{1,15}])?: /,
         guildMSG: /^Guild > (\[.*]\s*)?([\w]{2,17}).*?(\[.{1,15}])?: /,
         guildJoin: /^Guild > (?<username>[\w]{2,17}) joined\.$/,
@@ -52,10 +50,10 @@ function configureMinecraftBot(bot){
     messageHandlers = {
         guildMSG: async (user,message) => {
             try{
-                regex = new RegExp(`^${process.env.PREFIX}(sw|bw|sb)\\s+(?<target>[\\w]{2,17})`); // CHECKS IF MESSAGE CONTAINS COMMAND
+                regex = new RegExp(`^${config.prefix}(sw|bw|sb)\\s+(?<target>[\\w]{2,17})`); // CHECKS IF MESSAGE CONTAINS COMMAND
                 
                 if (!regex.test(message)){
-                    await sendMsgToDiscord(`${user+message}`,process.env.DISCORD_TEXT_CHANNEL);
+                    await sendMsgToDiscord(`${user+message}`,config.discordIngameTextChannel);
                 }
             }
             catch (error){
@@ -63,9 +61,9 @@ function configureMinecraftBot(bot){
             }
         },
         officerMSG: async (user,message) => {
-            regex = new RegExp(`^${process.env.PREFIX}(sw|bw|sb)\\s+(?<target>[\\w]{2,17})`); // CHECKS IF MESSAGE CONTAINS COMMAND
+            regex = new RegExp(`^${config.prefix}(sw|bw|sb)\\s+(?<target>[\\w]{2,17})`); // CHECKS IF MESSAGE CONTAINS COMMAND
             if (!regex.test(message)){
-                await sendMsgToDiscord(`${user+message}`,process.env.DISCORD_OFFICER_TEXT_CHANNEL);
+                await sendMsgToDiscord(`${user+message}`,config.discordIngameOfficerTextChannel);
             }
         },
         bwStatCheck: async(groups) => {
@@ -73,19 +71,19 @@ function configureMinecraftBot(bot){
             avoidRepeat = await avoidRepeatString();
             await mcbot.chat(`/msg ${groups.username} [${data.star}✫] ${data.display} ▏ FKDR: ${data.finals} ▏ WLR: ${data.wlr} ▏ BBLR: ${data.beds} ▏ ${avoidRepeat}`);
             console.log(`/msg ${groups.username} [${data.star}✫] ${data.display} ▏ FKDR: ${data.finals} ▏ WLR: ${data.wlr} ▏ BBLR: ${data.beds} ▏ ${avoidRepeat}`);
-            await sendLogToDiscord(`[${data.star}✫] ${data.display} ▏ FKDR: ${data.finals} ▏ WLR: ${data.wlr} ▏ BBLR: ${data.beds}`,process.env.DISCORD_BOT_LOGS_CHANNEL);
+            await sendLogToDiscord(`[${data.star}✫] ${data.display} ▏ FKDR: ${data.finals} ▏ WLR: ${data.wlr} ▏ BBLR: ${data.beds}`,config.discordBotLogsTextChannel);
         },
         sbStatCheck: async(groups) => {
             data = await returnSBStats(groups.target);
             avoidRepeat = await avoidRepeatString();
             mcbot.chat(`/msg ${groups.username} [${data.sbLvl}] ${data.display} ▏ Networth: ${data.networth} ▏ Skill Avg.: ${data.skillAvg} ▏ ${avoidRepeat}`);
-            await sendLogToDiscord(`[${data.sbLvl}] ${data.display} ▏ Networth: ${data.networth} ▏ Skill Avg.: ${data.skillAvg}`,process.env.DISCORD_BOT_LOGS_CHANNEL);
+            await sendLogToDiscord(`[${data.sbLvl}] ${data.display} ▏ Networth: ${data.networth} ▏ Skill Avg.: ${data.skillAvg}`,config.discordBotLogsTextChannel);
         },
         swStatCheck: async(groups) => {
             data = await returnSWStats(groups.target);
             avoidRepeat = await avoidRepeatString();
             mcbot.chat(`/msg ${groups.username} [${data.star}✮] ${data.display} ▏ KDR: ${data.kdr} ▏ WLR: ${data.wlr} ▏ Kills: ${data.kills} ▏ Wins: ${data.wins} ▏ ${avoidRepeat}`);
-            await sendLogToDiscord(`[${data.star}✮] ${data.display} ▏ KDR: ${data.kdr} ▏ WLR: ${data.wlr} ▏ Kills: ${data.kills} ▏ Wins: ${data.wins}`,process.env.DISCORD_BOT_LOGS_CHANNEL);
+            await sendLogToDiscord(`[${data.star}✮] ${data.display} ▏ KDR: ${data.kdr} ▏ WLR: ${data.wlr} ▏ Kills: ${data.kills} ▏ Wins: ${data.wins}`,config.discordBotLogsTextChannel);
         },
         guildJoin: async(groups)=>{
             console.log("someone joined");
@@ -103,22 +101,22 @@ function configureMinecraftBot(bot){
             console.log("someone unmuted");
         },
         guildMemberJoined: async(groups) =>{
-            message = welcomeMessage.replace("\\user\\",groups.username);
+            message = config.welcomeMessage.replace("\\user\\",groups.username);
             await mcbot.chat(`/gc `+message);
         },
         guildQuestCompleted: async()=>{
             console.log("Guild Quest Tier Up");
-            await sendLogToDiscord(`Guild Quest Tier Completed!`,process.env.DISCORD_BOT_LOGS_CHANNEL);
+            await sendLogToDiscord(`Guild Quest Tier Completed!`,config.discordBotLogsTextChannel);
         },
         guildLevelUp: async()=>{
             console.log("Guild Level Up");
-            await sendLogToDiscord('Guild Levelled up!',process.env.DISCORD_BOT_LOGS_CHANNEL);
+            await sendLogToDiscord('Guild Levelled up!',config.discordBotLogsTextChannel);
         }
     }
     // JOIN MSG
     mcbot.once('spawn', async () => {
         console.log(`Joined with ${mcbot.username}`);
-        await sendLogToDiscord("MC Bot connected",process.env.DISCORD_BOT_LOGS_CHANNEL);
+        await sendLogToDiscord("MC Bot connected",config.discordBotLogsTextChannel);
     })
     // LOGIN HANDLER
     mcbot.on('login', () =>{
@@ -135,7 +133,7 @@ function configureMinecraftBot(bot){
                     const regex = regularExpressions[expression];
                     const match = cleanedMsg.match(regex);
                     if (match){
-                        await sendLogToDiscord(cleanedMsg,process.env.DISCORD_BOT_LOGS_CHANNEL);
+                        await sendLogToDiscord(cleanedMsg,config.discordBotLogsTextChannel);
                         if (!match.groups){
                             messageHandlers[expression](message.extra[0].text,message.extra[1].text);
                         }
@@ -154,7 +152,7 @@ function configureMinecraftBot(bot){
     // HANDLE DISCONNECTS
     mcbot.on('end', async () => {
         console.log("MC BOT disconnected");
-        await sendLogToDiscord("MC Bot disconnected",process.env.DISCORD_BOT_LOGS_CHANNEL);
+        await sendLogToDiscord("MC Bot disconnected",config.discordBotLogsTextChannel);
         setTimeout(reconnect,reconnectTimer);
     }
     );
