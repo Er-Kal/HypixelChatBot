@@ -21,3 +21,4 @@ This bot functions using mineflayer on hypixel. Any modifications to automate ta
   - Guild Chat Mutes/Unmutes
   - Stat command usage
   - Guild Quest completion
+  - Guild Level Up
