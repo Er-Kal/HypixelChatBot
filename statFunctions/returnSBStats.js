@@ -38,8 +38,8 @@ async function returnSBStats(user){
         return {display: display, sbLvl: sbLvl, networth:networth,skillAvg:skillAvg};
     }
     catch (error){
-        console.log(error);
-        return {display: user, sbLv:0,nw:0,skillAvg:0};
+        console.log("Error: ", error);
+        return {display: user, sbLvl:0, networth:0, skillAvg:0};
     }
 }
 

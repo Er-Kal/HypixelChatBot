@@ -80,17 +80,17 @@ dcbot.on('messageCreate', async (message) => {
         // Regular text channel messages
         if (message.channel.id === config.discordIngameTextChannel && message.author.id!=config.discordUserID){
             bridge.emit('sendMsgToMinecraft',`${message.member.displayName} > ${message.content}`,false);
-            message.delete();
+            setTimeout(() => message.delete(),500);
         }
         // Officer channel messages
         else if (message.channel.id === config.discordIngameOfficerTextChannel && message.author.id!=config.discordUserID){
             bridge.emit('sendMsgToMinecraft',`${message.member.displayName} > ${message.content}`,true);
-            message.delete();
+            setTimeout(() => message.delete(),500);
         }
         // Bot channel messages, sends a message without username
         else if (message.channel.id === config.discordBotLogsTextChannel && message.author.id!=config.discordUserID){
             bridge.emit('sendMsgToMinecraft',message.content,false);
-            message.delete();
+            setTimeout(() => message.delete(),500);
         }
     }
 })

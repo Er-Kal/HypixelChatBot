@@ -13,10 +13,11 @@ This bot functions using mineflayer on hypixel. Any modifications to automate ta
   - sw (user) to check skywars level, kdr (Kill/Death Ratio), wlr (Win/Loss Ratio), kills (Total Kills), wins (Total Wins)
   - Caching to avoid hitting rate limits
   - Avoid "repeating messages" to allow multiple people to check someone's stats
+    - Customisable messages after each stat check. Recommended >5.
 - Admin logs
   - Join/Leave Messages
   - New Members/Leaving Members
-    - Welcome message for new members
+    - Customisable Welcome message for new members
   - Guild Promotions/Demotions
   - Guild Chat Mutes/Unmutes
   - Stat command usage
