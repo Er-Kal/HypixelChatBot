@@ -4,6 +4,7 @@ const mineflayer = require("mineflayer");
 const {returnSBStats} = require("./statFunctions/returnSBStats.js");
 const {returnBWStats} = require("./statFunctions/returnBWStats.js");
 const {returnSWStats} = require("./statFunctions/returnSWStats.js");
+const {returnPlayerInfo} = require("./statFunctions/returnPlayerInfo.js");
 const {avoidRepeatString} = require("./avoidRepeat.js");
 
 const {bridge} = require("./botBridge.js");
@@ -34,6 +35,7 @@ function configureMinecraftBot(bot){
         bwStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${config.prefix}[bB][wW]\\s+(?<target>[\\w]{2,17})`),
         sbStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${config.prefix}[sS][bB]\\s+(?<target>[\\w]{2,17})`),
         swStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${config.prefix}[sS][wW]\\s+(?<target>[\\w]{2,17})`),
+        infoCheck: new RegExp(`^Officer > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${config.prefix}[iI][nN][fF][oO]\\s+(?<target>[\\w]{2,17})`),
         officerMSG: /^Officer > (\[.*]\s*)?([\w]{2,17}).*?(\[.{1,15}])?: /,
         guildMSG: /^Guild > (\[.*]\s*)?([\w]{2,17}).*?(\[.{1,15}])?: /,
         guildJoin: /^Guild > (?<username>[\w]{2,17}) joined\.$/,
@@ -85,6 +87,12 @@ function configureMinecraftBot(bot){
             mcbot.chat(`/msg ${groups.username} [${data.star}✮] ${data.display} ▏ KDR: ${data.kdr} ▏ WLR: ${data.wlr} ▏ Kills: ${data.kills} ▏ Wins: ${data.wins} ▏ ${avoidRepeat}`);
             await sendLogToDiscord(`[${data.star}✮] ${data.display} ▏ KDR: ${data.kdr} ▏ WLR: ${data.wlr} ▏ Kills: ${data.kills} ▏ Wins: ${data.wins}`,config.discordBotLogsTextChannel);
         },
+        infoCheck: async(groups) => {
+            data = await returnPlayerInfo(groups.target);
+            avoidRepeat = await avoidRepeatString();
+            mcbot.chat(`/oc ${groups.target} ▏Network ${data.nwLevel} ▏BW ${data.bwStar} ▏SW ${data.swStar} ▏SB ${data.sbLevel} ▏${avoidRepeat}`);
+            await sendLogToDiscord(`${groups.target} ▏Network ${data.nwLevel} ▏BW ${data.bwStar} ▏SW ${data.swStar} ▏SB ${data.sbLevel}`,config.discordBotLogsTextChannel);
+        },
         guildJoin: async(groups)=>{
             console.log("someone joined");
         },
@@ -103,6 +111,8 @@ function configureMinecraftBot(bot){
         guildMemberJoined: async(groups) =>{
             message = config.welcomeMessage.replace("\\user\\",groups.username);
             await mcbot.chat(`/gc `+message);
+            data = await returnPlayerInfo(groups.username);
+            await mcbot.chat(`/oc ${groups.username} ▏Network ${data.nwLevel} ▏BW ${data.bwStar} ▏SW ${data.swStar} ▏SB ${data.sbLevel} ▏${avoidRepeat}`);
         },
         guildQuestCompleted: async()=>{
             console.log("Guild Quest Tier Up");
