@@ -1,7 +1,7 @@
 #  Hypixel Guild to Discord bridge
 Bot to send messages between discord and hypixel guild chat. Provides additional commands to check statistics and manage the guild.
 
-This bot functions using mineflayer on hypixel. Any modifications to automate tasks are bannable on hypixel so beware when using this :)
+This bot functions using mineflayer on hypixel. Any modifications to automate tasks (eg automatic messages cough cough) are bannable on hypixel so beware when using this :)
 
 # Feature List
 - Bridge from Hypixel Guild Chat to Discord Text Channel
