@@ -136,6 +136,12 @@ dcbot.on('interactionCreate', async (interaction) =>{
                 bridge.emit("demote",playerName);
                 interaction.reply({content:"Command sent",ephemeral:true});
             }
+            // Demote command
+            if (interaction.commandName ==="invite"){
+                const playerName = interaction.options.getString("player-name");
+                bridge.emit("invite",playerName);
+                interaction.reply({content:"Command sent",ephemeral:true});
+            }
         }
         
     }

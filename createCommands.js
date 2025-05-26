@@ -45,6 +45,13 @@ commands = [
         return option.setName("player-name").setDescription("The name of the player you want to demote").setRequired(true);
     })
     .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
+
+    // Command to invite a player to the guild
+    new SlashCommandBuilder().setName("invite").setDescription("Invite a player to the guild")
+    .addStringOption(option => {
+        return option.setName("player-name").setDescription("The ingame name of the player you want to invite").setRequired(true);
+    })
+    .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
 ]
 
 // Code to place the commands into a specific guild/server
@@ -58,4 +65,8 @@ const registerSlash = async () =>{
         console.error(error);
     }
 }
+
 registerSlash();
+
+
+// Run node createCommands.js to register them :)

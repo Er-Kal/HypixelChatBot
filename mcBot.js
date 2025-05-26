@@ -159,6 +159,7 @@ function configureMinecraftBot(bot){
             console.error("ERROR:",error);
         }
     })
+
     // HANDLE DISCONNECTS
     mcbot.on('end', async () => {
         console.log("MC BOT disconnected");
@@ -166,11 +167,15 @@ function configureMinecraftBot(bot){
         setTimeout(reconnect,reconnectTimer);
     }
     );
+
+    // Attempts to reconnect when the player disconnects
     function reconnect(){
         console.log("Attempting to rejoin");
         mcbot = mineflayer.createBot(options);
         configureMinecraftBot(mcbot);
     }
+
+    // Handlers for all the discord bridge events
     bridge.on('sendMsgToMinecraft', (message,isOfficer) => {
             msg = isOfficer? "/oc" : "/gc";
             msg+=" "+message;
@@ -191,6 +196,10 @@ function configureMinecraftBot(bot){
     )
     bridge.on('demote', (playerName) => {
             mcbot.chat(`/g demote ${playerName}`);
+        }
+    )
+    bridge.on('invite', (playerName) => {
+            mcbot.chat(`/g invite ${playerName}`);
         }
     )
 }
