@@ -23,3 +23,9 @@ This bot functions using mineflayer on hypixel. Any modifications to automate ta
   - Stat command usage
   - Guild Quest completion
   - Guild Level Up
+- Admin commands on discord for ingame interaction
+  - Promote
+  - Demote
+  - Invite
+  - Mute
+  - Unmute
