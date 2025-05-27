@@ -46,7 +46,8 @@ function configureMinecraftBot(bot){
         guildMute: /^(\[.*]\s)?([\w*]{2,17}) has muted (\[.*]\s)?([\w*]{2,17}) for (\d+[mhd])$/,
         guildUnmute: /^(\[.*]\s)?([\w*]{2,17}) has unmuted (\[.*]\s)?([\w*]{2,17})$/,
         guildQuestCompleted: /^\s*GUILD QUEST TIER (\d) COMPLETED/,
-        guildLevelUp: /^\s*The Guild has reached Level (\d*)!$/
+        guildLevelUp: /^\s*The Guild has reached Level (\d*)!$/,
+        guildRequestJoin: /^(\[.*]\s*)?(?<username>[\w]{2,17}) has requested to join the Guild!$/
     };
     // Handlers for regexp matches
     messageHandlers = {
@@ -110,10 +111,7 @@ function configureMinecraftBot(bot){
         },
         guildMemberJoined: async(groups) =>{
             message = config.welcomeMessage.replace("\\user\\",groups.username);
-            await mcbot.chat(`/gc `+message);
-            data = await returnPlayerInfo(groups.username);
-            await mcbot.chat(`/oc ${groups.username} ▏Network ${data.nwLevel} ▏BW ${data.bwStar} ▏SW ${data.swStar} ▏SB ${data.sbLevel} ▏${avoidRepeat}`);
-        },
+            await mcbot.chat(`/gc `+message);},
         guildQuestCompleted: async()=>{
             console.log("Guild Quest Tier Up");
             await sendLogToDiscord(`Guild Quest Tier Completed!`,config.discordBotLogsTextChannel);
@@ -121,6 +119,10 @@ function configureMinecraftBot(bot){
         guildLevelUp: async()=>{
             console.log("Guild Level Up");
             await sendLogToDiscord('Guild Levelled up!',config.discordBotLogsTextChannel);
+        },
+        guildRequestJoin: async(groups)=>{
+            data = await returnPlayerInfo(groups.username);
+            await mcbot.chat(`/oc ${groups.username} ▏Network ${data.nwLevel} ▏BW ${data.bwStar} ▏SW ${data.swStar} ▏SB ${data.sbLevel} ▏${avoidRepeat}`);
         }
     }
     // JOIN MSG
