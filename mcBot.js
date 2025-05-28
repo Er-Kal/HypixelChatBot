@@ -44,10 +44,10 @@ function configureMinecraftBot(bot){
         guildMemberLeft: /^(\[.*]\s*)?([\w]{2,17}) left the guild!$/,
         guildRankChange: /^(\[.*]\s*)?([\w]{2,17}) was (promoted|demoted) from (.*) to (.*)$/,
         guildMute: /^(\[.*]\s)?([\w*]{2,17}) has muted (\[.*]\s)?([\w*]{2,17}) for (\d+[mhd])$/,
-        guildUnmute: /^(\[.*]\s)?([\w*]{2,17}) has unmuted (\[.*]\s)?([\w*]{2,17})$/,
+        guildUnmute: /^(\[.*]\s*)?([\w*]{2,17}) has unmuted (\[.*]\s)?([\w*]{2,17})$/,
         guildQuestCompleted: /^\s*GUILD QUEST TIER (\d) COMPLETED/,
         guildLevelUp: /^\s*The Guild has reached Level (\d*)!$/,
-        guildRequestJoin: /^(\[.*]\s*)?(?<username>[\w]{2,17}) has requested to join the Guild!$/
+        guildRequestJoin: /([-]*)(\[.*]\s*)?(?<username>[\w]{2,17}) has requested to join the Guild!/
     };
     // Handlers for regexp matches
     messageHandlers = {
@@ -85,7 +85,7 @@ function configureMinecraftBot(bot){
         swStatCheck: async(groups) => {
             data = await returnSWStats(groups.target);
             avoidRepeat = await avoidRepeatString();
-            mcbot.chat(`/msg ${groups.username} [${data.star}✮] ${data.display} ▏ KDR: ${data.kdr} ▏ WLR: ${data.wlr} ▏ Kills: ${data.kills} ▏ Wins: ${data.wins} ▏ ${avoidRepeat}`);
+            mcbot.chat(`/msg ${groups.username} [${data.star}✮] ${data.displayName} ▏ KDR: ${data.kdr} ▏ WLR: ${data.wlr} ▏ Kills: ${data.kills} ▏ Wins: ${data.wins} ▏ ${avoidRepeat}`);
             await sendLogToDiscord(`[${data.star}✮] ${data.display} ▏ KDR: ${data.kdr} ▏ WLR: ${data.wlr} ▏ Kills: ${data.kills} ▏ Wins: ${data.wins}`,config.discordBotLogsTextChannel);
         },
         infoCheck: async(groups) => {
@@ -121,7 +121,9 @@ function configureMinecraftBot(bot){
             await sendLogToDiscord('Guild Levelled up!',config.discordBotLogsTextChannel);
         },
         guildRequestJoin: async(groups)=>{
+            console.log("attempted to join");
             data = await returnPlayerInfo(groups.username);
+            avoidRepeat = await avoidRepeatString();
             await mcbot.chat(`/oc ${groups.username} ▏Network ${data.nwLevel} ▏BW ${data.bwStar} ▏SW ${data.swStar} ▏SB ${data.sbLevel} ▏${avoidRepeat}`);
         }
     }

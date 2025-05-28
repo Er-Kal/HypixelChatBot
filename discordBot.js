@@ -74,24 +74,29 @@ async function sendLogToDiscord(message,channelID){
 
 // Handles when messages are sent in the specific channels. 
 dcbot.on('messageCreate', async (message) => {
-    const bannedInputs = ["http:","https:"];
+    const bannedInputs = ["http:","https:","doxx","doxxed","doxxer","doxxing","doxing","doxes","doxxes","cunt","dox"];
     // Simple check to see if message includes links lwk unnecessary since hypixel stops these anyway
-    if (!bannedInputs.some(ban=>message.content.includes(ban))){
+    const containsIP = message.content.match(/(?:[\d]{1,4}\s){2,3}(?:[\d]{1,4})/)
+    if (!bannedInputs.some(ban=>message.content.includes(ban)) && !containsIP){
         // Regular text channel messages
         if (message.channel.id === config.discordIngameTextChannel && message.author.id!=config.discordUserID){
             bridge.emit('sendMsgToMinecraft',`${message.member.displayName} > ${message.content}`,false);
-            setTimeout(() => message.delete(),500);
+            setTimeout(() => message.delete(),200);
         }
         // Officer channel messages
         else if (message.channel.id === config.discordIngameOfficerTextChannel && message.author.id!=config.discordUserID){
             bridge.emit('sendMsgToMinecraft',`${message.member.displayName} > ${message.content}`,true);
-            setTimeout(() => message.delete(),500);
+            setTimeout(() => message.delete(),200);
         }
         // Bot channel messages, sends a message without username
         else if (message.channel.id === config.discordBotLogsTextChannel && message.author.id!=config.discordUserID){
             bridge.emit('sendMsgToMinecraft',message.content,false);
-            setTimeout(() => message.delete(),500);
+            setTimeout(() => message.delete(),200);
         }
+    }
+    else{
+        message.reply({content:"Contains bad words",ephemeral:true});
+        setTimeout(() => message.delete(),200);
     }
 })
 // Makes the bot login/go online
