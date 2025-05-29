@@ -7,6 +7,7 @@ This bot functions using mineflayer on hypixel. Any modifications to automate ta
 - Bridge from Hypixel Guild Chat to Discord Text Channel
   - Guild Chat messages
   - Officer Chat messages
+  - Basic filter to prevent mutes/bans (IPs, "dox" references)
 - Commands to check basic hypixel stats
   - bw (user) to check bedwars level, fkdr (Final Kill/Death Ratio), bblr (Bed Broken/Lost Ratio), wlr (Win/Loss Ratio)
   - sb (user) to check skyblock profile level, networth, skill average
