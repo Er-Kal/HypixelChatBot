@@ -4,6 +4,35 @@ const {Client, GatewayIntentBits} = require("discord.js");
 const imageGen = require("./imageGen.js");
 const {bridge} = require("./botBridge.js");
 
+
+
+// Message queue for discord messages
+queue = [];
+queueEmpty = true;
+
+async function addToMSGQueue(message,channelID,log){
+    // Adds a message to the queue
+    queue.push({message,channelID,log});
+    if (queueEmpty){
+        processQueue();
+    }
+}
+
+async function processQueue(){
+    while (queue.length > 0){
+        queueEmpty = false;
+        const queueTask = queue.shift();
+        if (queueTask.log){
+            await sendLogToDiscord(queueTask.message,queueTask.channelID);
+        }
+        else{
+            await sendMsgToDiscord(queueTask.message,queueTask.channelID);
+        }
+    }
+    queueEmpty = true;
+}
+
+
 var config = require("./config.json");
 // Initialises discord bot
 const dcbot = new Client({
@@ -156,5 +185,6 @@ dcbot.on('interactionCreate', async (interaction) =>{
 
 module.exports = {
     sendMsgToDiscord,
-    sendLogToDiscord
+    sendLogToDiscord,
+    addToMSGQueue
 }
