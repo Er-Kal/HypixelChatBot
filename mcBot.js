@@ -47,7 +47,7 @@ function configureMinecraftBot(bot){
         guildUnmute: /^(\[.*]\s*)?([\w*]{2,17}) has unmuted (\[.*]\s)?([\w*]{2,17})$/,
         guildQuestCompleted: /^\s*GUILD QUEST TIER (\d) COMPLETED/,
         guildLevelUp: /^\s*The Guild has reached Level (\d*)!$/,
-        guildRequestJoin: /([-]*)(\[.*]\s*)?(?<username>[\w]{2,17}) has requested to join the Guild!/
+        //guildRequestJoin: /([-]*)(\[.*]\s*)?(?<username>[\w]{2,17}) has requested to join the Guild!/
     };
     // Handlers for regexp matches
     messageHandlers = {
