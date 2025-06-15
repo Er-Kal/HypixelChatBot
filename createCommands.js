@@ -1,4 +1,3 @@
-
 var config = require("./config.json");
 
 const {REST, Routes, SlashCommandBuilder,PermissionFlagsBits} = require("discord.js")
@@ -67,6 +66,5 @@ const registerSlash = async () =>{
 }
 
 registerSlash();
-
 
 // Run node createCommands.js to register them :)

@@ -103,32 +103,33 @@ function configureMinecraftBot(bot){
         guildJoin: async(groups)=>{
             console.log("someone joined");
         },
-        guildLeft: ()=>{
+        guildLeft: async ()=>{
             console.log("someone left");
         },
-        guildRankChange: ()=>{
+        guildRankChange: async ()=>{
             console.log("rank change");
         },
-        guildMute: ()=>{
+        guildMute: async ()=>{
             console.log("someone muted");
         },
-        guildUnmute: ()=>{
+        guildUnmute: async ()=>{
             console.log("someone unmuted");
         },
-        guildMemberJoined: async(groups) =>{
+        guildMemberJoined: async (groups) =>{
             message = config.welcomeMessage.replace("\\user\\",groups.username);
-            await mcbot.chat(`/gc `+message);},
-        guildQuestCompleted: async()=>{
+            await mcbot.chat(`/gc `+message);
+        },
+        guildQuestCompleted: async ()=>{
             console.log("Guild Quest Tier Up");
             //await sendLogToDiscord(`Guild Quest Tier Completed!`,config.discordBotLogsTextChannel);
             await addToMSGQueue(`Guild Quest Tier Completed!`,config.discordBotLogsTextChannel,true);
         },
-        guildLevelUp: async()=>{
+        guildLevelUp: async ()=>{
             console.log("Guild Level Up");
             //await sendLogToDiscord('Guild Levelled up!',config.discordBotLogsTextChannel);
             await addToMSGQueue('Guild Levelled up!',config.discordBotLogsTextChannel,true);
         },
-        guildRequestJoin: async(groups)=>{
+        guildRequestJoin: async (groups)=>{
             console.log("attempted to join");
             data = await returnPlayerInfo(groups.username);
             avoidRepeat = await avoidRepeatString();
@@ -146,7 +147,7 @@ function configureMinecraftBot(bot){
     })
     mcbot.on('message', async (message) =>{
         try{
-            console.log(message);
+            // console.log(message);
             if (message.extra){
                 //const cleanedMsg = message.text+message.extra[0].text.replace(/§[0-9a-fA-F]/g,'')+message.extra[1].text;
                 const cleanedMsg = message.text+message.extra.map((el) => el.text.replace(/§[0-9a-fA-F]/g,'')).join('');

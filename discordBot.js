@@ -1,4 +1,4 @@
-require('dotenv').config();
+
 
 const {Client, GatewayIntentBits} = require("discord.js");
 const imageGen = require("./imageGen.js");
