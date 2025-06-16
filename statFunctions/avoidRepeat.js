@@ -1,4 +1,4 @@
-var config = require("./config.json");
+var config = require("../config.json");
 
 // Fetch random messages from config
 // Used to bypass repeated messages
