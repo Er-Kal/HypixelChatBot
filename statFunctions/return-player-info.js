@@ -1,4 +1,4 @@
-const {returnHypixelStats} = require("./returnHypixelStats.js");
+const {returnHypixelStats} = require("./return-hypixel-stats.js");
 
 async function returnPlayerInfo(user){
     try{

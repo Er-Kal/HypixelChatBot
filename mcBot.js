@@ -1,10 +1,11 @@
 require('dotenv').config();
 const { sendLogToDiscord, sendMsgToDiscord, addToMSGQueue} = require("./discordBot");
 const mineflayer = require("mineflayer");
-const {returnSBStats} = require("./statFunctions/returnSBStats.js");
-const {returnBWStats} = require("./statFunctions/returnBWStats.js");
-const {returnSWStats} = require("./statFunctions/returnSWStats.js");
-const {returnPlayerInfo} = require("./statFunctions/returnPlayerInfo.js");
+const {returnSBStats} = require("./statFunctions/return-sb-stats.js");
+const {returnBWStats} = require("./statFunctions/return-bw-stats.js");
+const {returnBWOStats} = require("./statFunctions/return-bwo-stats.js");
+const {returnSWStats} = require("./statFunctions/return-sw-stats.js");
+const {returnPlayerInfo} = require("./statFunctions/return-player-info.js");
 const {avoidRepeatString} = require("./avoidRepeat.js");
 
 const {bridge} = require("./botBridge.js");
@@ -35,6 +36,7 @@ function configureMinecraftBot(bot){
         bwStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${config.prefix}[bB][wW]\\s+(?<target>[\\w]{2,17})`),
         sbStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${config.prefix}[sS][bB]\\s+(?<target>[\\w]{2,17})`),
         swStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${config.prefix}[sS][wW]\\s+(?<target>[\\w]{2,17})`),
+        bwoStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${config.prefix}[bB][wW][oO]\\s+(?<target>[\\w]{2,17})`),
         infoCheck: new RegExp(`^Officer > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${config.prefix}[iI][nN][fF][oO]\\s+(?<target>[\\w]{2,17})`),
         officerMSG: /^Officer > (\[.*]\s*)?([\w]{2,17}).*?(\[.{1,15}])?: /,
         guildMSG: /^Guild > (\[.*]\s*)?([\w]{2,17}).*?(\[.{1,15}])?: /,
@@ -47,7 +49,7 @@ function configureMinecraftBot(bot){
         guildUnmute: /^(\[.*]\s*)?([\w*]{2,17}) has unmuted (\[.*]\s)?([\w*]{2,17})$/,
         guildQuestCompleted: /^\s*GUILD QUEST TIER (\d) COMPLETED/,
         guildLevelUp: /^\s*The Guild has reached Level (\d*)!$/,
-        //guildRequestJoin: /([-]*)(\[.*]\s*)?(?<username>[\w]{2,17}) has requested to join the Guild!/
+        guildRequestJoin: /^[-]*[\n\r](\[.*]\s*)?(?<username>[\w]{2,17}) has requested to join the Guild![\n\r]Click here to accept or type \/guild accept [\w]{2,17}![\n\r][-]*[\n\r]$/
     };
     // Handlers for regexp matches
     messageHandlers = {
@@ -119,6 +121,9 @@ function configureMinecraftBot(bot){
             message = config.welcomeMessage.replace("\\user\\",groups.username);
             await mcbot.chat(`/gc `+message);
         },
+        guildMemberLeft: async (groups) =>{
+            console.log("Someone left the guild lol");
+        },
         guildQuestCompleted: async ()=>{
             console.log("Guild Quest Tier Up");
             //await sendLogToDiscord(`Guild Quest Tier Completed!`,config.discordBotLogsTextChannel);
@@ -134,7 +139,15 @@ function configureMinecraftBot(bot){
             data = await returnPlayerInfo(groups.username);
             avoidRepeat = await avoidRepeatString();
             await mcbot.chat(`/oc ${groups.username} ▏Network ${data.nwLevel} ▏BW ${data.bwStar} ▏SW ${data.swStar} ▏SB ${data.sbLevel} ▏${avoidRepeat}`);
-        }
+        },
+        bwoStatCheck: async(groups) => {
+            data = await returnBWOStats(groups.target);
+            avoidRepeat = await avoidRepeatString();
+            await mcbot.chat(`/msg ${groups.username} [${data.star}✫] ${data.display} ▏ FKDR: ${data.finals} ▏ WLR: ${data.wlr} ▏ BBLR: ${data.beds} ▏ ${avoidRepeat}`);
+            console.log(`/msg ${groups.username} [${data.star}✫] ${data.display} ▏ FKDR: ${data.finals} ▏ WLR: ${data.wlr} ▏ BBLR: ${data.beds} ▏ ${avoidRepeat}`);
+            //await sendLogToDiscord(`[${data.star}✫] ${data.display} ▏ FKDR: ${data.finals} ▏ WLR: ${data.wlr} ▏ BBLR: ${data.beds}`,config.discordBotLogsTextChannel);
+            await addToMSGQueue(`[${data.star}✫] ${data.display} ▏ FKDR: ${data.finals} ▏ WLR: ${data.wlr} ▏ BBLR: ${data.beds}`,config.discordBotLogsTextChannel,true);
+         }
     }
     // JOIN MSG
     mcbot.once('spawn', async () => {
@@ -145,28 +158,34 @@ function configureMinecraftBot(bot){
     mcbot.on('login', () =>{
         mcbot.chat("/limbo");
     })
+    
     mcbot.on('message', async (message) =>{
         try{
-            // console.log(message);
-            if (message.extra){
-                //const cleanedMsg = message.text+message.extra[0].text.replace(/§[0-9a-fA-F]/g,'')+message.extra[1].text;
-                const cleanedMsg = message.text+message.extra.map((el) => el.text.replace(/§[0-9a-fA-F]/g,'')).join('');
-                console.log(cleanedMsg);
-                for (expression in regularExpressions){
-                    const regex = regularExpressions[expression];
-                    const match = cleanedMsg.match(regex);
-                    if (match){
+            const {text, extra} = message;
+            if (!extra){
+                return;
+            }
+            const cleanedMsg = text+extra.map((el) => el.text.replace(/§[0-9a-fA-F]/g,'')).join('');
+            console.log("Cleaned Message:",cleanedMsg);
+            
+            for (expression in regularExpressions){
+                const regex = regularExpressions[expression];
+                const match = cleanedMsg.match(regex);
+                
+                if (match){
+                    if (expression!="guildRequestJoin"){
                         await sendLogToDiscord(cleanedMsg,config.discordBotLogsTextChannel);
-                        if (!match.groups){
-                            messageHandlers[expression](message.extra[0].text,message.extra[1].text);
-                        }
-                        else{
-                            messageHandlers[expression](match.groups);
-                        }
-                        break;
                     }
+                    if (!match.groups){
+                        await messageHandlers[expression](extra[0].text,extra[1].text);
+                    }
+                    else{
+                        await messageHandlers[expression](match.groups);
+                    }
+                    break;
                 }
             }
+
         }
         catch(error){
             console.error("ERROR:",error);

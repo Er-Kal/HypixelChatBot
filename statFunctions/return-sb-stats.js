@@ -1,4 +1,4 @@
-const {returnHypixelStats} = require("./returnHypixelStats.js")
+const {returnHypixelStats} = require("./return-hypixel-stats.js")
 
 // FETCH SB STATS FROM SOOPY
 async function fetchSBStats(uuid){

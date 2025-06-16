@@ -36,7 +36,7 @@ async function returnHypixelStats(user){
         data = cache.get(user);
         if (data==null){
             data = fetchHypixelStats(user);
-            cache.set(user, data, 60);
+            cache.set(user, data, 120);
         }
         return data;
     }

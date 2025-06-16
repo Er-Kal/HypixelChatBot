@@ -1,5 +1,3 @@
-
-
 const {Client, GatewayIntentBits} = require("discord.js");
 const imageGen = require("./imageGen.js");
 const {bridge} = require("./botBridge.js");
@@ -106,26 +104,29 @@ dcbot.on('messageCreate', async (message) => {
     const bannedInputs = ["http:","https:","doxx","doxxed","doxxer","doxxing","doxing","doxes","doxxes","cunt","dox"];
     // Simple check to see if message includes links lwk unnecessary since hypixel stops these anyway
     const containsIP = message.content.match(/(?:[\d]{1,4}\s){2,3}(?:[\d]{1,4})/)
-    if (!bannedInputs.some(ban=>message.content.includes(ban)) && !containsIP){
-        // Regular text channel messages
-        if (message.channel.id === config.discordIngameTextChannel && message.author.id!=config.discordUserID){
-            bridge.emit('sendMsgToMinecraft',`${message.member.displayName} > ${message.content}`,false);
-            setTimeout(() => message.delete(),200);
-        }
-        // Officer channel messages
-        else if (message.channel.id === config.discordIngameOfficerTextChannel && message.author.id!=config.discordUserID){
-            bridge.emit('sendMsgToMinecraft',`${message.member.displayName} > ${message.content}`,true);
-            setTimeout(() => message.delete(),200);
-        }
-        // Bot channel messages, sends a message without username
-        else if (message.channel.id === config.discordBotLogsTextChannel && message.author.id!=config.discordUserID){
-            bridge.emit('sendMsgToMinecraft',message.content,false);
-            setTimeout(() => message.delete(),200);
-        }
+    if (message.author.id === dcbot.user.id){
+        return;
     }
-    else{
-        message.reply({content:"Contains bad words",ephemeral:true});
+    if (bannedInputs.some(ban=>message.content.includes(ban)) || containsIP){
+        setTimeout(() => message.delete(),500);
+        return;
+    }
+    if (message.channel.id === config.discordIngameTextChannel && message.author.id!=config.discordUserID){
+        bridge.emit('sendMsgToMinecraft',`${message.member.displayName} > ${message.content}`,false);
         setTimeout(() => message.delete(),200);
+        return;
+    }
+    // Officer channel messages
+    if (message.channel.id === config.discordIngameOfficerTextChannel && message.author.id!=config.discordUserID){
+        bridge.emit('sendMsgToMinecraft',`${message.member.displayName} > ${message.content}`,true);
+        setTimeout(() => message.delete(),200);
+        return;
+    }
+    // Bot channel messages, sends a message without username
+    if (message.channel.id === config.discordBotLogsTextChannel && message.author.id!=config.discordUserID){
+        bridge.emit('sendMsgToMinecraft',message.content,false);
+        setTimeout(() => message.delete(),200);
+        return;
     }
 })
 // Makes the bot login/go online
@@ -179,7 +180,6 @@ dcbot.on('interactionCreate', async (interaction) =>{
         }
         
     }
-
 
 })
 
