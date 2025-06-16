@@ -1,4 +1,4 @@
-const {Client, GatewayIntentBits} = require("discord.js");
+const {Client, GatewayIntentBits, MessageFlags} = require("discord.js");
 const imageGen = require("./imageGen.js");
 const {bridge} = require("./botBridge.js");
 
@@ -146,43 +146,43 @@ dcbot.on('interactionCreate', async (interaction) =>{
         if (interaction.isCommand() && interaction.guild.id===config.discordServerID){
             // Check if the command user has officer role
             if (!interaction.member.roles.cache.has(config.discordOfficerRoleID)){
-                interaction.reply({content:"Insufficient role permissions", ephemeral:true})
+                interaction.reply({content:"Insufficient role permissions", flags: MessageFlags.Ephemeral})
             }
             else{
                 // Status command, does nada
                 if (interaction.commandName === "status"){
-                interaction.reply({content:"Probably working :shrug:",ephemeral: true})
+                interaction.reply({content:"Probably working :shrug:", flags: MessageFlags.Ephemeral})
                 }
                 // Unmute command
                 if (interaction.commandName === "unmute"){
                     const playerName = interaction.options.getString("player-name");
                     bridge.emit("unmute",playerName);
-                    interaction.reply({content:"Command sent",ephemeral: true})
+                    interaction.reply({content:"Command sent", flags: MessageFlags.Ephemeral})
                 }
                 // Mute Command
                 if (interaction.commandName === "mute"){
                     const playerName = interaction.options.getString("player-name");
                     const duration = interaction.options.getString("duration");
                     bridge.emit("mute",playerName,duration);
-                    interaction.reply({content:"Command sent",ephemeral: true})
+                    interaction.reply({content:"Command sent", flags: MessageFlags.Ephemeral})
                 }
                 // Promote command
                 if (interaction.commandName ==="promote"){
                     const playerName = interaction.options.getString("player-name");
                     bridge.emit("promote",playerName);
-                    interaction.reply({content:"Command sent",ephemeral:true});
+                    interaction.reply({content:"Command sent", flags: MessageFlags.Ephemeral});
                 }
                 // Demote command
                 if (interaction.commandName ==="demote"){
                     const playerName = interaction.options.getString("player-name");
                     bridge.emit("demote",playerName);
-                    interaction.reply({content:"Command sent",ephemeral:true});
+                    interaction.reply({content:"Command sent", flags: MessageFlags.Ephemeral});
                 }
                 // Demote command
                 if (interaction.commandName ==="invite"){
                     const playerName = interaction.options.getString("player-name");
                     bridge.emit("invite",playerName);
-                    interaction.reply({content:"Command sent",ephemeral:true});
+                    interaction.reply({content:"Command sent", flags: MessageFlags.Ephemeral});
                 }
             }
         }
