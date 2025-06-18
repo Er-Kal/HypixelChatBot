@@ -1,6 +1,17 @@
 const {returnHypixelStats} = require("./return-hypixel-stats.js");
 // CALC BW STATS
-async function returnBWStats(user){
+
+const modes = {
+    "core": "core",
+    "solo": "eight_one_",
+    "duo": "eight_two_",
+    "three": "four_three_",
+    "four": "four_four_",
+    "overall": "",
+    "fvf": "two_four_"
+}
+
+async function returnBWStatsDefunct(user){
     try{
         
         data = await returnHypixelStats(user);
@@ -49,6 +60,68 @@ async function returnBWStats(user){
     catch(error){
         console.error("ERROR:",error)
         return {display: user, finals: 0, beds: 0, star: 0, wlr:0};
+    }
+}
+
+async function returnBWStats(user,mode){
+    try{
+        data = await returnHypixelStats(user);
+        dpName = data.player.displayname;
+        bedwarStats = data.player.stats?.Bedwars;
+        bedwarsStar = data.player.achievements.bedwars_level;
+
+        let totalStats;
+        if (mode==="core"){
+            overall = await returnRawStats(bedwarStats, modes["overall"]);
+            fvf = await returnRawStats(bedwarStats, modes["fvf"]);
+            
+            totalStats = {
+                totalFinalKills: overall.finalKills - fvf.finalKills,
+                totalFinalDeaths: overall.finalDeaths - fvf.finalDeaths,
+                totalWins: overall.wins - fvf.wins,
+                totalLosses: overall.losses - fvf.losses,
+                totalBedsLost: overall.bedsLost - fvf.bedsLost,
+                totalBedsBroken: overall.bedsBroken - fvf.bedsBroken
+            };
+        }
+        else{
+            const modeData = await returnRawStats(bedwarStats, modes[mode]);
+            totalStats = {
+                totalFinalKills: modeData.finalKills,
+                totalFinalDeaths: modeData.finalDeaths,
+                totalWins: modeData.wins,
+                totalLosses: modeData.losses,
+                totalBedsLost: modeData.bedsLost,
+                totalBedsBroken: modeData.bedsBroken
+            };
+        }
+
+        finalKillRatio = ((totalStats.totalFinalKills || 1)/(totalStats.totalFinalDeaths || 1)).toFixed(2);
+        bedBrokenRatio = ((totalStats.totalBedsBroken || 1)/(totalStats.totalBedsLost || 1)).toFixed(2);
+        winLossRatio = ((totalStats.totalWins || 1)/(totalStats.totalLosses || 1)).toFixed(2);
+        
+        return {display: dpName, finals: finalKillRatio, beds: bedBrokenRatio, star: bedwarsStar, wlr: winLossRatio};
+    }
+    catch(error){
+        console.error("ERROR:",error);
+        return {display: user, finals: 0, beds: 0, star: 0, wlr:0};
+    }
+}
+
+async function returnRawStats(data,modePrefix){
+    try{
+        finalKills = (bedwarStats[`${modePrefix}final_kills_bedwars`] ?? 0);
+        finalDeaths = (bedwarStats[`${modePrefix}final_deaths_bedwars`] ?? 0);
+        wins = (bedwarStats[`${modePrefix}wins_bedwars`] ?? 0);
+        losses = (bedwarStats[`${modePrefix}losses_bedwars`] ?? 0);
+        bedsLost = (bedwarStats[`${modePrefix}beds_lost_bedwars`] ?? 0);
+        bedsBroken = (bedwarStats[`${modePrefix}beds_broken_bedwars`] ?? 0);
+
+        return {finalKills, finalDeaths, wins, losses, bedsLost, bedsBroken};
+    }
+    catch (error){
+        console.error("ERROR:",error);
+        return {finalKills:0, finalDeaths:0, bedsBroken:0, bedsLost:0, wins:0, losses:0};
     }
 }
 
