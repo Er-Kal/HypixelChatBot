@@ -16,7 +16,7 @@ regularExpressions = {
     sbStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${config.prefix}sb\\s+(?<target>[\\w]{2,17})`,'i'),
     swStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${config.prefix}sw\\s+(?<target>[\\w]{2,17})`,'i'),
     bwoStatCheck: new RegExp(`^(?:Guild|Officer) > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${config.prefix}bwo\\s+(?<target>[\\w]{2,17})`,'i'),
-    infoCheck: new RegExp(`^Officer > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${config.prefix}[iI][nN][fF][oO]\\s+(?<target>[\\w]{2,17})`),
+    //infoCheck: new RegExp(`^Officer > (?:\\[.*]\\s*)?(?<username>[\\w]{2,17})(?:.*?\\[.{1,2}])?:\\s*${config.prefix}[iI][nN][fF][oO]\\s+(?<target>[\\w]{2,17})`),
     officerMSG: /^Officer > (\[.*]\s*)?([\w]{2,17}).*?(\[.{1,15}])?: /,
     guildMSG: /^Guild > (\[.*]\s*)?([\w]{2,17}).*?(\[.{1,15}])?: /,
     guildJoin: /^Guild > (?<username>[\w]{2,17}) joined\.$/,
@@ -28,7 +28,7 @@ regularExpressions = {
     guildUnmute: /^(\[.*]\s*)?([\w*]{2,17}) has unmuted (\[.*]\s)?([\w*]{2,17})$/,
     guildQuestCompleted: /^\s*GUILD QUEST TIER (\d) COMPLETED/,
     guildLevelUp: /^\s*The Guild has reached Level (\d*)!$/,
-    guildRequestJoin: /^[-]*[\n\r](\[.*]\s*)?(?<username>[\w]{2,17}) has requested to join the Guild![\n\r]Click here to accept or type \/guild accept [\w]{2,17}![\n\r][-]*[\n\r]$/    
+    //guildRequestJoin: /^[-]*[\n\r](\[.*]\s*)?(?<username>[\w]{2,17}) has requested to join the Guild![\n\r]Click here to accept or type \/guild accept [\w]{2,17}![\n\r][-]*[\n\r]$/    
 };
 
 messageHandlers = {
